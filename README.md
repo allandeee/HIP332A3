@@ -294,12 +294,12 @@ We may summarise the syntactic aspects of the top level structure of a Hipster p
     
     tipe : "boolean" | "int" | "float" | "neighbour"
     
-    vardecl : tipe idndef "=" expr ";"
+    vardecl : tipe idndef ("=" expr)? ";"
     
     idndecl : tipe idndef
     
     idndecllist : empty
-                | idndecl ("," idndecl) 
+                | idndecl ("," idndecl)* 
     
     fundecl : "function" idndef "(" decllist ")" (":" tipe) "{" statement* "}"
     
@@ -309,7 +309,7 @@ We may summarise the syntactic aspects of the top level structure of a Hipster p
     
     nbrdef : idndef "=" coordexpr
     
-    neighbourdecl : "neighbourhood" nbrdef ("," nbrdef)*
+    neighbourdecl : "neighbourhood" nbrdef ("," nbrdef)* ";"
     
     statedecl : "state" "{" vardecl* "}"
     
