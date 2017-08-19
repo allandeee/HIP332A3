@@ -172,7 +172,7 @@ function glider(int row, int col) {
       nbr:alive = true;
 }
 
-// Note that the last funtion uses the `cell` statement. This sets the
+// Note that the last function uses the `cell` statement. This sets the
 // current cell to a specified location and then executes the associated
 // statement (an `iterate` statement in this case). The body of the 
 // iterate loop also makes assignments to the state of neighbouring cells.
@@ -317,12 +317,12 @@ topleveldecl : vardecl
 
 tipe : &quot;boolean&quot; | &quot;int&quot; | &quot;float&quot; | &quot;neighbour&quot;
 
-vardecl : tipe idndef &quot;=&quot; expr &quot;;&quot;
+vardecl : tipe idndef (&quot;=&quot; expr)? &quot;;&quot;
 
 idndecl : tipe idndef
 
 idndecllist : empty
-            | idndecl (&quot;,&quot; idndecl) 
+            | idndecl (&quot;,&quot; idndecl)* 
 
 fundecl : &quot;function&quot; idndef &quot;(&quot; decllist &quot;)&quot; (&quot;:&quot; tipe) &quot;{&quot; statement* &quot;}&quot;
 
@@ -332,7 +332,7 @@ dimdecl : &quot;dimension&quot; &quot;(&quot; dim (&quot;,&quot; dim)* &quot;)&q
 
 nbrdef : idndef &quot;=&quot; coordexpr
 
-neighbourdecl : &quot;neighbourhood&quot; nbrdef (&quot;,&quot; nbrdef)*
+neighbourdecl : &quot;neighbourhood&quot; nbrdef (&quot;,&quot; nbrdef)* &quot;;&quot;
 
 statedecl : &quot;state&quot; &quot;{&quot; vardecl* &quot;}&quot;
 
