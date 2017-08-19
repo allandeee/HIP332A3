@@ -1,0 +1,147 @@
+HipsterProgram (
+    Vector (
+        ConstantDecl (
+            VarDecl (IntType (), IdnDef ("width"), Some (IntExpr (100)))),
+        ConstantDecl (
+            VarDecl (IntType (), IdnDef ("height"), Some (IntExpr (100)))),
+        DimDecl (
+            Vector (
+                IdnExpr (IdnUse ("width")) -> true,
+                IdnExpr (IdnUse ("height")) -> false)),
+        NeighbourhoodDecl (
+            Vector (
+                IdnDef ("N") -> CoordExpr (
+                    Vector (IntExpr (0), IntExpr (1))),
+                IdnDef ("S") -> CoordExpr (
+                    Vector (IntExpr (0), NegExpr (IntExpr (1)))),
+                IdnDef ("W") -> CoordExpr (
+                    Vector (NegExpr (IntExpr (1)), IntExpr (0))),
+                IdnDef ("E") -> CoordExpr (
+                    Vector (IntExpr (1), IntExpr (0))),
+                IdnDef ("NE") -> CoordExpr (
+                    Vector (IntExpr (1), IntExpr (1))),
+                IdnDef ("SE") -> CoordExpr (
+                    Vector (IntExpr (1), NegExpr (IntExpr (1)))),
+                IdnDef ("SW") -> CoordExpr (
+                    Vector (NegExpr (IntExpr (1)), NegExpr (IntExpr (1)))),
+                IdnDef ("NW") -> CoordExpr (
+                    Vector (NegExpr (IntExpr (1)), IntExpr (1))))),
+        StateDecl (
+            Vector (
+                VarDecl (BoolType (), IdnDef ("alive"), Some (FalseExpr ())))),
+        UpdaterDecl (
+            Vector (
+                VarDecl (IntType (), IdnDef ("count"), Some (IntExpr (0))),
+                IterateOverStmt (
+                    IdnDef ("current"),
+                    Others (),
+                    IfStmt (
+                        NeighbourExpr (IdnUse ("current"), IdnUse ("alive")),
+                        AssignStmt (
+                            IdnExpr (IdnUse ("count")),
+                            PlusExpr (
+                                IdnExpr (IdnUse ("count")),
+                                IntExpr (1))),
+                        None)),
+                IfStmt (
+                    AndExpr (
+                        IdnExpr (IdnUse ("alive")),
+                        OrExpr (
+                            LessExpr (
+                                IdnExpr (IdnUse ("count")),
+                                IntExpr (2)),
+                            GreaterExpr (
+                                IdnExpr (IdnUse ("count")),
+                                IntExpr (3)))),
+                    AssignStmt (IdnExpr (IdnUse ("alive")), FalseExpr ()),
+                    None),
+                IfStmt (
+                    AndExpr (
+                        NotExpr (IdnExpr (IdnUse ("alive"))),
+                        EqualExpr (IdnExpr (IdnUse ("count")), IntExpr (3))),
+                    AssignStmt (IdnExpr (IdnUse ("alive")), TrueExpr ()),
+                    None))),
+        ConstantDecl (
+            VarDecl (IntType (), IdnDef ("black"), Some (IntExpr (0)))),
+        ConstantDecl (
+            VarDecl (
+                IntType (),
+                IdnDef ("white"),
+                Some (IntExpr (16777215)))),
+        ColourMapperDecl (
+            Vector (
+                IfStmt (
+                    IdnExpr (IdnUse ("alive")),
+                    ReturnStmt (Some (IdnExpr (IdnUse ("white")))),
+                    Some (ReturnStmt (Some (IdnExpr (IdnUse ("black")))))))),
+        FunctionDecl (
+            IdnDef ("glider"),
+            Vector (
+                IntType () -> IdnDef ("row"),
+                IntType () -> IdnDef ("col")),
+            None,
+            Vector (
+                CellStmt (
+                    CoordExpr (
+                        Vector (
+                            IdnExpr (IdnUse ("row")),
+                            IdnExpr (IdnUse ("column")))),
+                    IterateOverStmt (
+                        IdnDef ("nbr"),
+                        Subset (
+                            Vector (
+                                IdnUse ("N"),
+                                IdnUse ("E"),
+                                IdnUse ("SW"),
+                                IdnUse ("S"),
+                                IdnUse ("SE"))),
+                        AssignStmt (
+                            NeighbourExpr (IdnUse ("nbr"), IdnUse ("alive")),
+                            TrueExpr ()))))),
+        InitialiserDecl (
+            IdnDef ("singleGlider"),
+            Vector (
+                FunCallStmt (
+                    IdnUse ("glider"),
+                    Vector (
+                        DivExpr (IdnExpr (IdnUse ("height")), IntExpr (2)),
+                        DivExpr (IdnExpr (IdnUse ("width")), IntExpr (2)))))),
+        InitialiserDecl (
+            IdnDef ("fourGliders"),
+            Vector (
+                FunCallStmt (
+                    IdnUse ("glider"),
+                    Vector (
+                        DivExpr (IdnExpr (IdnUse ("height")), IntExpr (4)),
+                        DivExpr (IdnExpr (IdnUse ("width")), IntExpr (4)))),
+                FunCallStmt (
+                    IdnUse ("glider"),
+                    Vector (
+                        DivExpr (
+                            MultExpr (
+                                IntExpr (3),
+                                IdnExpr (IdnUse ("height"))),
+                            IntExpr (4)),
+                        DivExpr (IdnExpr (IdnUse ("width")), IntExpr (4)))),
+                FunCallStmt (
+                    IdnUse ("glider"),
+                    Vector (
+                        DivExpr (IdnExpr (IdnUse ("height")), IntExpr (4)),
+                        DivExpr (
+                            MultExpr (
+                                IntExpr (3),
+                                IdnExpr (IdnUse ("width"))),
+                            IntExpr (4)))),
+                FunCallStmt (
+                    IdnUse ("glider"),
+                    Vector (
+                        DivExpr (
+                            MultExpr (
+                                IntExpr (3),
+                                IdnExpr (IdnUse ("height"))),
+                            IntExpr (4)),
+                        DivExpr (
+                            MultExpr (
+                                IntExpr (3),
+                                IdnExpr (IdnUse ("width"))),
+                            IntExpr (4))))))))

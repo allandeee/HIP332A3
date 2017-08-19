@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>assignment1.html</title>
+
+</head>
+
+<body>
+
+<h1>Macquarie University, Department of Computing</h1>
+
+<h2>COMP332 Programming Languages 2017</h2>
+
+<h2>Assignment 1</h2>
+
+<p>Due: 11am Thursday 31 August (week 5)<br/>
+Worth: 10% of unit assessment</p>
+
+<p>Marks breakdown:</p>
+
+<ul>
+<li>Code: 50% (of which tests are worth 10%)</li>
+<li>Report: 50% (of which test description is worth 10%)</li>
+</ul>
+
+<p>Submit a notice of disruption via <a href="https://ask.mq.edu.au">Ask@MQ</a> if you are unable to submit on time for medical or other legitimate reasons.</p>
+
+<p>Late penalty without proper justification: 20% of the full marks for the assessment per day or part thereof late.</p>
+
+<h3>Overview</h3>
+
+<p>This assignment asks you to develop a lexical analyser, parser and tree builder for a simple domain specific, imperative programming language called <a href="https://en.wikipedia.org/wiki/Hipster_(contemporary_subculture)">Hipster</a>. We will build on these components in later assignments to complete a full implementation of this language.</p>
+
+<p>Building this implementation will give you insight into the way that domain specific programming language implementations work in general, as well as specific experience with how language programs are written, how they are compiled, and how they are executed.</p>
+
+<p>This kind of task often arises in programming situations other than language implementation. For example, many applications have configuration files that are written in simple languages. The application must be able to read these files reliably and understand their structure, just as a compiler must read program files and understand them.</p>
+
+<p>The Hipster programming language and its syntax are described in detail in the README file which you can find, in markdown and HTML formats, in the root directory of the assignment 1 skeleton.</p>
+
+<h3>What you have to do</h3>
+
+<p>You have to write, document and test a Scala syntax analyser including tree builder for the Hipster language. </p>
+
+<p>The parser skeleton you have been given already handles the lexical issues such as parsing integers and floating point constants, identifiers (both defining <code>idnDef</code> and applied occurrences <code>idnUse</code>) and comments. This code is in the <code>ParserExtras.scala</code> file, and it is already imported for you to use in the <code>SyntaxAnalysis.scala</code> file that you will be adding your parser code to.</p>
+
+<p>You are strongly advised not to try to solve the whole assignment in one go. It is best to write code to handle the parsing and tree construction for some simple constructs first and then build up to the full language.</p>
+
+<p>Your code must use the Kiama parsing library as discussed in lectures and practicals. You should use the expression language syntax analyser and tree builder from the mixed classes as a guide for your implementation.</p>
+
+<p>A skeleton sbt project for the assignment has been provided on BitBucket as the <a href="https://bitbucket.org/dominicverity/comp332-hipster">dominicverity/comp332-hipster</a> repository. The modules are very similar to those used in the practical exercises for Week 2 onwards. The skeleton contains the modules you will need. Some of the parsing and tree construction is given to you as an illustration; you must provide the rest (look for FIXME in the code).</p>
+
+<p>As well as lexing and parsing the input, your program should construct a suitable source program tree to represent the parsed result. See <code>HipsterTree.scala</code> in the skeleton for the full definition and description of the tree structures that you must use. For this part of the assignment, you should not have to modify the tree classes, just create instances in your parser code.</p>
+
+<p>As an example of the desired tree structure, here is a fragment of Hipster code</p>
+
+<pre><code>2 + 3 * 4
+</code></pre>
+
+<p>and here is the tree that your syntax analyser should produce the following syntax tree:</p>
+
+<pre><code> PlusExpr(
+    IntExpr(2),
+    MultExpr(
+      IntExpr(3),
+      IntExpr(4)))
+</code></pre>
+
+<p>Notice that the higher precedence of multiplication over addition has been taken into account in this tree. As a more complex example, consider the following fragment of Hipster code</p>
+
+<pre><code>updater {
+  int count = 0;
+
+  iterate current over others
+    if current:alive then count = count+1;
+
+  if alive &amp;&amp; (count &lt; 2 || count &gt; 3) then alive = false;
+  if !alive &amp;&amp; count == 3 then alive = true;
+}
+</code></pre>
+
+<p>from which your compiler should produce the following more complicated syntax tree:</p>
+
+<pre><code>UpdaterDecl (
+    Vector (
+        VarDecl (IntType (), IdnDef (&quot;count&quot;), Some (IntExpr (0))),
+        IterateOverStmt (
+            IdnDef (&quot;current&quot;),
+            Others (),
+            IfStmt (
+                NeighbourExpr (IdnUse (&quot;current&quot;), IdnUse (&quot;alive&quot;)),
+                AssignStmt (
+                    IdnExpr (IdnUse (&quot;count&quot;)),
+                    PlusExpr (
+                        IdnExpr (IdnUse (&quot;count&quot;)),
+                        IntExpr (1))),
+                None)),
+        IfStmt (
+            AndExpr (
+                IdnExpr (IdnUse (&quot;alive&quot;)),
+                OrExpr (
+                    LessExpr (
+                        IdnExpr (IdnUse (&quot;count&quot;)),
+                        IntExpr (2)),
+                    GreaterExpr (
+                        IdnExpr (IdnUse (&quot;count&quot;)),
+                        IntExpr (3)))),
+            AssignStmt (IdnExpr (IdnUse (&quot;alive&quot;)), FalseExpr ()),
+            None),
+        IfStmt (
+            AndExpr (
+                NotExpr (IdnExpr (IdnUse (&quot;alive&quot;))),
+                EqualExpr (IdnExpr (IdnUse (&quot;count&quot;)), IntExpr (3))),
+            AssignStmt (IdnExpr (IdnUse (&quot;alive&quot;)), TrueExpr ()),
+            None)))
+</code></pre>
+
+<h3>Running the syntax analyser and testing it</h3>
+
+<p>The skeleton for this assignment is designed to be run from within sbt. For example, to compile your project and run it on the file <code>src/test/resources/life.hip</code> (which is provided for you in the framework code) you use the command</p>
+
+<pre><code>run src/test/resources/life.hip
+</code></pre>
+
+<p>Assuming your code compiles and runs, the run will print the tree that has been constructed (for correct input), or will print a syntax error message (for incorrect input). In the same directory as the <code>life.hip</code> file you will find a file called <code>life.out</code>, this contains the output produced by our Hipster syntax analyser when it processed the <code>life.hip</code> code.</p>
+
+<p>The project is also set up to do automatic testing. See the file <code>SyntaxAnalysisTests.scala</code> which provides the necessary definitions to test the syntax analyser on some sample inputs. Note that the tests we provide are not sufficient to test all of your code. You must augment them with other tests.</p>
+
+<p>You can run the tests using the <code>test</code> command in sbt. This command will build the project and then run each test in turn, comparing the output produced by your program with the expected output. Any deviations will be reported as test failures.</p>
+
+<h3>What you must hand in and how</h3>
+
+<p>A zip file containing all of the code for your project and a type-written report.</p>
+
+<p>Submit every source and build file that is needed to build your program from source, including files in the skeleton that you have not changed. Do not add any new files or include multiple versions of your files. Do not include any libraries or generated files (run the sbt <code>clean</code> command before you zip your project). We will compile all of the files that you submit using sbt, so you should avoid any other build mechanisms.</p>
+
+<p>Your submission should include all of the tests that you have used to make sure that your program is working correctly. Note that just testing one or two simple cases is not enough for many marks. You should test as comprehensively as you can.</p>
+
+<p>Your report should describe how you have achieved the goals of the assignment. Do not neglect the report since it is worth 50% of the marks for the assignment.</p>
+
+<p>Your report should contain the following sections:</p>
+
+<ul>
+<li>A title page or heading that gives the assignment details, your name and student number.</li>
+<li>A brief introduction that summarises the aim of the assignment and the structure of the rest of the report.</li>
+<li>A description of the design and implementation work that you have done to achieve the goals of the assignment. Listing some code fragments may be useful to illustrate your description, but don't give a long listing. Leaving out obvious stuff is OK, as long as what you have done is clear. A good rule of thumb is to include enough detail to allow a fellow student to understand it if they are at the stage you were at when you started work on the assignment.</li>
+<li>A description of the testing that you carried out. You should demonstrate that you have used a properly representative set of test cases to be confident that you have covered all the bases. Include details of the tests that you used and the rationale behind why they were chosen. Do not just print the tests out without explanation.</li>
+</ul>
+
+<p>Submit your code and report electronically as a single zip file called <code>ass1.zip</code> using the appropriate submission link on the COMP332 iLearn website by the due date and time. Your report should be in PDF format.</p>
+
+<p>DO NOT SUBMIT YOUR ASSIGNMENT OR DOCUMENTATION IN ANY OTHER FORMAT THAN ZIP and PDF, RESPECTIVELY. Use of any other format slows down the marking and may result in a mark deduction.</p>
+
+<h3>Marking</h3>
+
+<p>The assignment will be assessed according to the assessment standards for the unit learning outcomes.</p>
+
+<p>Marks will be allocated equally to the code and to the report. Your code will be assessed for correctness and quality with respect to the assignment description. Marking of the report will assess the clarity and accuracy of your description and the adequacy of your testing. 20% of the marks for the assignment will be allocated to testing.</p>
+
+<hr />
+
+<p><a href="http://orcid.org/0000-0002-4137-6982">Dominic Verity</a><br/>
+Last modified: 10 August 2017<br/>
+<a href="http://www.mq.edu.au/legalstuff.html">Copyright (c) 2017 by Dominic Verity. All rights reserved.</a></p>
+
+</body>
+</html>
