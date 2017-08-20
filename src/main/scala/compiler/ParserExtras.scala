@@ -88,6 +88,6 @@ trait ParserExtras extends Parsers {
   lazy val idnDef : PackratParser[IdnDef] = nocut(ident ^^ IdnDef)
 
   override val whitespace : Parser[String] =
-    """(\s|(//.*\n))*""".r
+    """(\s|(//.*\R))*""".r
 }
 
