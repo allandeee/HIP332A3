@@ -359,7 +359,7 @@ This grammar is, of course, ambiguous as it stands, and it is disambiguated by t
     * boolean operators
     * relational operators
     * addition and subtraction
-    * multiplication and division
+    * multiplication, division and remainder
     * all other kinds of expression 
 
 2. All binary expression operators are left associative, except for the relational operators which are not associative.
@@ -467,6 +467,6 @@ The expression immediately after the `cell` keyword specifies the coordinate of 
 
 ---
 [Dominic Verity](http://orcid.org/0000-0002-4137-6982)  
-Last modified: 9 August 2017  
+Last modified: 20 August 2017  
 [Copyright (c) 2017 by Dominic Verity. Macquarie University. All rights reserved.](http://mozilla.org/MPL/2.0/)
 
