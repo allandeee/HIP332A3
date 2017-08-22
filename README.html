@@ -310,6 +310,7 @@ mapper {
 topleveldecl : vardecl
              | fundecl
              | dimdecl
+             | statedecl
              | neighbourdecl
              | updaterdecl
              | mapperdecl
@@ -324,7 +325,7 @@ idndecl : tipe idndef
 idndecllist : empty
             | idndecl (&quot;,&quot; idndecl)* 
 
-fundecl : &quot;function&quot; idndef &quot;(&quot; decllist &quot;)&quot; (&quot;:&quot; tipe) &quot;{&quot; statement* &quot;}&quot;
+fundecl : &quot;function&quot; idndef &quot;(&quot; idndecllist &quot;)&quot; (&quot;:&quot; tipe)? &quot;{&quot; statement* &quot;}&quot;
 
 dim : expr &quot;cyclic&quot;?
 

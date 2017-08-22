@@ -287,6 +287,7 @@ We may summarise the syntactic aspects of the top level structure of a Hipster p
     topleveldecl : vardecl
                  | fundecl
                  | dimdecl
+                 | statedecl
                  | neighbourdecl
                  | updaterdecl
                  | mapperdecl
@@ -301,7 +302,7 @@ We may summarise the syntactic aspects of the top level structure of a Hipster p
     idndecllist : empty
                 | idndecl ("," idndecl)* 
     
-    fundecl : "function" idndef "(" decllist ")" (":" tipe) "{" statement* "}"
+    fundecl : "function" idndef "(" idndecllist ")" (":" tipe)? "{" statement* "}"
     
     dim : expr "cyclic"?
     
