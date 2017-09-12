@@ -9,7 +9,6 @@
   * file, You can obtain one at http://mozilla.org/MPL/2.0/.
   */
 
-package org.bitbucket.dominicverity.hipster
 package compiler
 
 import org.bitbucket.inkytonik.kiama.parsing._
@@ -41,15 +40,22 @@ trait ParserExtras extends Parsers {
 
   lazy val lvalue : PackratParser[LValue] =
     nocut(
-      idnUseE ~ (":" ~> idnUseE) ^^ NeighbourExpr |
-        idnUseE ^^ IdnExpr | failure("lvalue expected"))
+      neighbourExpr | idnExpr |
+        failure("lvalue expected"))
 
   lazy val leaf : PackratParser[Expression] =
     nocut(
-      idnUseE ~ (":" ~> idnUseE) ^^ NeighbourExpr |
-        idnUseE ~ ("(" ~> repsep(expression, ",") <~ ")") ^^ FunCallExpr |
-        idnUseE ^^ IdnExpr | floatExprE | intExprE |
+       neighbourExpr | funCallExpr | idnExpr | floatExprE | intExprE |
         failure("identifier or numerical constant expected"))
+
+  lazy val neighbourExpr : PackratParser[NeighbourExpr] =
+    idnExpr ~ (":" ~> idnUseE) ^^ NeighbourExpr
+
+  lazy val idnExpr : PackratParser[IdnExpr] =
+    idnUseE ^^ IdnExpr 
+
+  lazy val funCallExpr : PackratParser[FunCallExpr] =
+    idnUseE ~ ("(" ~> repsep(expression, ",") <~ ")") ^^ FunCallExpr
 
   private lazy val intExprE : PackratParser[IntExpr] =
     wrapWithError(regex(intRegex) |
@@ -63,11 +69,22 @@ trait ParserExtras extends Parsers {
 
   lazy val floatExpr : PackratParser[FloatExpr] = nocut(floatExprE)
 
+  // The following parser succeeds if it parses a specified string
+  // followed by a character that cannot occur in an identifier.
+  // It uses a "lookahead" regexp form to test for the following
+  // non-identifier character without including it in the matched
+  // token. This ensures that we don't parse a prefix of an identifier
+  // as a keyword.
+  
+  def keyword (kws : String) : PackratParser[String] =
+    regex("""(%s)(?=([^a-zA-Z0-9]|\z))""".format(kws).r)
+
   lazy val reservedWords : List[String] = List(
     "dimension", "neighbourhood", "state", "updater", "initialiser",
     "mapper", "function", "int", "boolen", "float", "neighbour", "if",
     "then", "else", "iterate", "over", "all", "others", "for", "to",
-    "step", "return", "case", "of", "otherwise", "true", "false")
+    "step", "return", "case", "of", "otherwise", "true", "false",
+    "cyclic" )
 
   lazy val reservedWordsRegex =
     (reservedWords mkString ("","|","")).r 
@@ -81,6 +98,7 @@ trait ParserExtras extends Parsers {
             Right("reserved word found where identifier expected")
           case s => Left(s)}))
 
+
   private lazy val idnUseE : PackratParser[IdnUse] = ident ^^ IdnUse
 
   lazy val idnUse : PackratParser[IdnUse] = nocut(ident ^^ IdnUse)
@@ -88,6 +106,6 @@ trait ParserExtras extends Parsers {
   lazy val idnDef : PackratParser[IdnDef] = nocut(ident ^^ IdnDef)
 
   override val whitespace : Parser[String] =
-    """(\s|(//.*\R))*""".r
+    """(\s|(//.*(\R|\z)))*""".r
 }
 

@@ -9,13 +9,19 @@
   * file, You can obtain one at http://mozilla.org/MPL/2.0/.
   */
 
-package org.bitbucket.dominicverity.hipster
 package compiler
 
 /**
  * Module containing structures for representing Hipster language programs.
  */
 object HipsterTree {
+
+  import org.bitbucket.inkytonik.kiama.relation.Tree
+
+  /**
+    * A relational tree to handle access to parent and sibling nodes.
+    */
+  type HipsterTree = Tree[HipsterNode, HipsterProgram]
 
   /**
     * Interface for all Hipster tree nodes.
@@ -38,33 +44,64 @@ object HipsterTree {
     * Each dimension is accompanied by a flag which specifies
     * whether it wraps around at its boundary.
     */
-  case class DimDecl(dims : Vector[(Expression, Boolean)])
+  case class DimDecl(dims : Vector[Dimension])
       extends TopLevelDecl
+
+  /**
+    * A single dimension specification.
+    */
+  sealed abstract class Dimension extends HipsterNode {
+    val exp : Expression
+  }
+
+  /**
+    * A bounded dimension.
+    */
+  case class BoundedDim(exp : Expression) extends Dimension
+
+  /**
+    * A cyclic dimension.
+    */
+  case class CyclicDim(exp : Expression) extends Dimension
 
   /**
     * Neighbourhood declaration.
     * Each of the cells to which the current cell has direct access
     * is listed in this declaration.
     */
-  case class NeighbourhoodDecl(nbrs : Vector[(IdnDef, CoordExpr)])
+  case class NeighbourhoodDecl(nbrs : Vector[NeighbourDecl])
       extends TopLevelDecl
 
   /**
-    * State declaration. Speficies the data fields possessed by each cell.
+    * A single neighbour definition
+    */
+  case class NeighbourDecl(idn : IdnDef, coord : CoordExpr)
+      extends HipsterNode
+
+  /**
+    * State declaration. Specifies the data fields possessed by each cell.
     */
   case class StateDecl(flds : Vector[VarDecl]) extends TopLevelDecl
 
   /**
     * Top level constant declaration.
     */
-  case class ConstantDecl(decl : VarDecl) extends TopLevelDecl
+  case class ConstantDecl(
+    tipe : Type,
+    idn : IdnDef,
+    init : Expression) extends TopLevelDecl
 
   /**
     * Updater declaration. Contains the code which will be executed to
     * update the state of each cell. Like the Highlander, there can only
     * be one of these.
+    * 
+    * The first child of an updater node is an IdnDef node that acts as
+    * an anchor for name analysis. It is initialised to contain the 
+    * identifier "updater" in the parser. 
     */
-  case class UpdaterDecl(stmts : Vector[Statement]) extends TopLevelDecl
+  case class UpdaterDecl(stmts : Vector[Statement])
+      extends TopLevelDecl 
 
   /**
     * Initialiser declaration. Contains code to set the initial states
@@ -82,6 +119,10 @@ object HipsterTree {
     * blue (bits 0-7), green (bits 8-15) and red (bits 16-23) colour
     * channel intensities. Utility functions and hexadecimal constants
     * are provided to allow these colour values to be manipulated.
+    * 
+    * The first child of an colour mapper  node is an IdnDef node that 
+    * acts as an anchor for name analysis. It is initialised to contain the 
+    * identifier "mapper" in the parser. 
     */
   case class ColourMapperDecl(stmts : Vector[Statement])
       extends TopLevelDecl
@@ -91,9 +132,14 @@ object HipsterTree {
     */
   case class FunctionDecl(
     idn : IdnDef,
-    params : Vector[(Type, IdnDef)],
+    params : Vector[ParamDecl],
     ret : Option[Type],
     stmts : Vector[Statement]) extends TopLevelDecl
+
+  /**
+    * A single parameter declaration.
+    */
+  case class ParamDecl(tipe : Type, idn : IdnDef) extends HipsterNode
 
   /**
     * Abstract class for declaration types.
@@ -101,12 +147,24 @@ object HipsterTree {
   sealed abstract class Type extends HipsterNode
 
   /**
-    * Classes to represent the declared types of variables.
+    * Classes to represent the declared types of variables
+    * or the declared return type of a function.
     */
-  case class IntType() extends Type
-  case class BoolType() extends Type
-  case class FloatType() extends Type
-  case class NeighbourType() extends Type
+  case class IntType() extends Type {
+    override def toString = "int"
+  }
+  case class BoolType() extends Type {
+    override def toString = "boolean"
+  }
+  case class FloatType() extends Type {
+    override def toString = "float"
+  }
+  case class NeighbourType() extends Type {
+    override def toString = "neighbour"
+  }
+  case class UnknownType() extends Type {
+    override def toString = "unknown"
+  }
  
   // Identifiers names are represented in raw string form.
   type Identifier = String
@@ -177,7 +235,7 @@ object HipsterTree {
     */
   case class All() extends NeighbourSet  // All including current cell.
   case class Others() extends NeighbourSet // All but current cell.
-  case class Subset(nbrs : Vector[IdnUse]) extends NeighbourSet // Specified subset of neighbours.
+  case class Subset(nbrs : Vector[IdnExpr]) extends NeighbourSet // Specified subset of neighbours.
 
   /**
     * A general <for> loop, iterating over integer ranges. Semantics:
@@ -196,8 +254,7 @@ object HipsterTree {
   /**
     * Function call statement.
     */
-  case class FunCallStmt(idn : IdnUse, args : Vector[Expression])
-      extends Statement
+  case class FunCallStmt(fcall : FunCallExpr) extends Statement
 
   /**
     * <return> statement.
@@ -268,86 +325,103 @@ object HipsterTree {
   }
 
   /**
+    * Trait to label arithmetic operator classes.
+    */
+  trait ArithmeticOp extends Expression
+
+  /**
+    * Trait to label boolean operator classes.
+    */
+  trait BooleanOp extends Expression
+
+  /**
+    * Trait to label relational operator classes.
+    */
+  trait RelationalOp extends Expression
+
+  /**
     * Addition expression.
     */
   case class PlusExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with ArithmeticOp
 
   /**
     * Subtraction expression.
     */
   case class MinusExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with ArithmeticOp
 
   /**
     * Multiplication expression.
     */
   case class MultExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with ArithmeticOp
 
   /**
     * Division expression.
     */
   case class DivExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with ArithmeticOp
 
   /**
     * Remainder (modulus) expression.
     */
   case class ModExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with ArithmeticOp
 
   /**
     * Negation expression.
     */
-  case class NegExpr(exp : Expression) extends UnaryExpression
+  case class NegExpr(exp : Expression)
+      extends UnaryExpression with ArithmeticOp
 
   /**
     * Boolean conjunction (AND) expression.
     */
   case class AndExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with BooleanOp
 
   /**
     * Boolean conjunction (OR) expression.
     */
   case class OrExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with BooleanOp
   
   /**
     * Boolean not expression.
     */
-  case class NotExpr(exp : Expression) extends UnaryExpression
+  case class NotExpr(exp : Expression)
+      extends UnaryExpression with BooleanOp
 
   /**
     * Equality relation expression.
     */
   case class EqualExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with RelationalOp
 
   /**
     * Less than relation expression.
     */
   case class LessExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with RelationalOp
 
   /**
     * Greater than relation expression.
     */
   case class GreaterExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with RelationalOp
 
   /**
     * Less than or equal relation expression.
     */
   case class LessEqExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with RelationalOp
 
   /**
     * Greater than or equal relation expression.
     */
   case class GreaterEqExpr(left : Expression, right : Expression)
-      extends BinaryExpression
+      extends BinaryExpression with RelationalOp
 
   /**
     * Function call expression.
@@ -358,12 +432,12 @@ object HipsterTree {
   /**
     * A coordinate expession - just a tuple of integers.
     */
-  case class CoordExpr(ords : Vector[Expression]) extends Expression
+  case class CoordExpr(ords : Vector[Expression]) extends HipsterNode
 
   /**
     * Base class for all lvalue expressions
     */
-  sealed abstract class LValue() extends Expression
+  sealed abstract class LValue extends Expression
 
   /**
     * Identitifier expression
@@ -378,6 +452,6 @@ object HipsterTree {
     * <neighbour> can either be a constant neighbour name
     * or a variable bound in an iterate loop.
     */
-  case class NeighbourExpr(nbr : IdnUse, fld : IdnUse) extends LValue
+  case class NeighbourExpr(nbr : IdnExpr, fld : IdnUse) extends LValue
 
 }

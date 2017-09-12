@@ -9,7 +9,6 @@
   * file, You can obtain one at http://mozilla.org/MPL/2.0/.
   */
 
-package org.bitbucket.dominicverity.hipster
 package compiler
 
 import org.bitbucket.inkytonik.kiama.util.Messaging
@@ -19,7 +18,10 @@ import org.bitbucket.inkytonik.kiama.util.PositionStore
  * Syntax analyse the expression language program in the file given as the
  * first command-line argument and print the source tree.
  */
-object Main extends PositionStore with Messaging { 
+object Main extends PositionStore with Messaging {
+
+  import HipsterTree._
+  import SymbolTable._
 
   import java.io.FileNotFoundException
   import org.bitbucket.inkytonik.kiama.output.PrettyPrinter.{any, layout}
@@ -46,7 +48,20 @@ object Main extends PositionStore with Messaging {
             case Success (sourcetree, _) =>
 
               // Pretty print the source tree
-              println (layout (any (sourcetree)))
+              println("\nProgram tree:\n-------------\n")
+              println(layout(any(sourcetree)))
+
+              // Attribute the returned tree with semantic information.
+              val tree = new HipsterTree(sourcetree)
+              val analysis = new SemanticAnalysis(tree)
+
+              // Pretty print final environment.
+              println("\nEnvironment out:\n----------------\n")
+              println(format(analysis.envout(sourcetree)))
+
+              // Report any errors.
+              if (analysis.errors.length > 0)
+                report(analysis.errors)
 
             // Parsing failed, so report it
             case res : NoSuccess =>

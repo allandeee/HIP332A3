@@ -92,7 +92,7 @@ mapper {
 // Declare a function to place a "glider" at a specified location.
 
 function glider(int row, int col) {
-  cell [row, column]
+  cell [row, col]
     iterate nbr over [N, E, SW, S, SE]
       nbr:alive = true;
 }

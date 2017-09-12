@@ -9,7 +9,6 @@
   * file, You can obtain one at http://mozilla.org/MPL/2.0/.
   */
 
-package org.bitbucket.dominicverity.hipster
 package compiler
 
 import org.bitbucket.inkytonik.kiama.parsing.Parsers
@@ -33,37 +32,48 @@ class SyntaxAnalysis (positions : Positions)
   // Parsers for top level declarations.
 
   lazy val topLevelDecl : PackratParser[TopLevelDecl] =
-    dimDecl | stateDecl | constantDecl |
-      updaterDecl | initialiserDecl | colourMapperDecl
+    dimDecl | neighbourhoodDecl | stateDecl | constantDecl |
+      updaterDecl | initialiserDecl | colourMapperDecl |
+      functionDecl
 
   lazy val dimDecl : PackratParser[DimDecl] =
-    "dimension" ~>
-      "(" ~> rep1sep(expression ~ opt("cyclic"), ",") <~
-      ")" <~ ";" ^^
-      { lst => DimDecl(
-        lst map {
-          case (e ~ Some(_)) => (e,true);
-          case (e ~ None) => (e,false) })}
+    keyword("dimension") ~>
+      "(" ~> rep1sep(dimension, ",") <~ ")" <~ ";" ^^ DimDecl
 
-  // FIXME add a parser for the top level neighbourhood declaration here.
+  lazy val dimension : PackratParser[Dimension] =
+    expression ~ opt(keyword("cyclic")) ^^ {
+      case e ~ Some(_) => CyclicDim(e)
+      case e ~ None => BoundedDim(e)
+    }
+
+  lazy val nbrDef : PackratParser[NeighbourDecl] =
+    (idnDef <~ "=") ~ coordExpr ^^ NeighbourDecl
+
+  lazy val neighbourhoodDecl : PackratParser[NeighbourhoodDecl] =
+    keyword("neighbourhood") ~>rep1sep(nbrDef,",") <~ ";" ^^ NeighbourhoodDecl
 
   lazy val stateDecl : PackratParser[StateDecl] =
-    "state" ~> "{" ~> rep(varDecl) <~ "}" ^^ StateDecl
+    keyword("state") ~> "{" ~> rep(varDecl) <~ "}" ^^ StateDecl
 
   lazy val constantDecl : PackratParser[ConstantDecl] =
-    varDecl ^^ ConstantDecl
+    tipe ~ idnDef ~ ("=" ~> expression) <~ ";" ^^ ConstantDecl
 
   lazy val updaterDecl : PackratParser[UpdaterDecl] =
-    "updater" ~> "{" ~> rep(statement) <~ "}" ^^ UpdaterDecl
+    keyword("updater") ~> "{" ~> rep(statement) <~ "}" ^^ UpdaterDecl
 
   lazy val initialiserDecl : PackratParser[InitialiserDecl] =
-    "initialiser" ~> idnDef ~ ("{" ~> rep(statement) <~ "}") ^^
+   keyword( "initialiser") ~> idnDef ~ ("{" ~> rep(statement) <~ "}") ^^
       InitialiserDecl
 
   lazy val colourMapperDecl : PackratParser[ColourMapperDecl] =
-    "mapper" ~> "{" ~> rep(statement) <~ "}" ^^ ColourMapperDecl
+    keyword("mapper") ~> "{" ~> rep(statement) <~ "}" ^^ ColourMapperDecl
 
-  // FIXME add a parser for function declarations here.
+  lazy val paramDecl : PackratParser[ParamDecl] =
+    tipe ~ idnDef ^^ ParamDecl
+
+  lazy val functionDecl : PackratParser[FunctionDecl] =
+    keyword("function") ~> idnDef ~ ("(" ~> repsep(paramDecl, ",") <~ ")") ~
+      opt(":" ~> tipe) ~ ("{" ~> rep(statement) <~ "}") ^^ FunctionDecl
 
   // Parsers for variable declarations.
 
@@ -71,40 +81,51 @@ class SyntaxAnalysis (positions : Positions)
     tipe ~ idnDef ~ opt("=" ~> expression) <~ ";" ^^ VarDecl
 
   lazy val tipe : PackratParser[Type] =
-    "int" ^^ (_ => IntType()) |
-      "boolean" ^^ (_=> BoolType()) |
-      "float" ^^ (_=> FloatType()) |
-      "neighbour" ^^ (_=> NeighbourType())
+    keyword("int") ^^^ IntType() |
+      keyword("boolean") ^^^ BoolType() |
+      keyword("float") ^^^ FloatType() |
+      keyword("neighbour") ^^^ NeighbourType()
 
   // Parsers for statements
 
   lazy val statement : PackratParser[Statement] =
-    varDecl | ifStmt | returnStmt |
-      assignStmt | funCallStmt | block | emptyStmt
+    varDecl | ifStmt | iterateOverStmt | forStmt | returnStmt |
+      cellStmt | assignStmt | funCallStmt | block | emptyStmt
 
   lazy val block : PackratParser[Block] =
     "{" ~> rep(statement) <~ "}" ^^ Block
 
   lazy val emptyStmt : PackratParser[EmptyStmt] =
-    ";" ^^ (_ => EmptyStmt())
+    ";" ^^^ EmptyStmt()
 
   lazy val assignStmt : PackratParser[AssignStmt] =
     (lvalue <~ "=") ~ (expression <~ ";") ^^ AssignStmt
 
   lazy val ifStmt : PackratParser[IfStmt] =
-    ("if" ~> expression) ~ ("then" ~> statement) ~
-      opt("else" ~> statement) ^^ IfStmt
+    (keyword("if") ~> expression) ~ (keyword("then") ~> statement) ~
+      opt(keyword("else") ~> statement) ^^ IfStmt
 
-  // FIXME add parsers for `iterate...over` and `for` loops here.
+  lazy val iterateOverStmt : PackratParser[IterateOverStmt] =
+    (keyword("iterate") ~> idnDef) ~ (keyword("over") ~> neighbourSet) ~
+      statement ^^ IterateOverStmt
+
+  lazy val neighbourSet : PackratParser[NeighbourSet] =
+    keyword("all") ^^^ All() |
+      keyword("others") ^^^ Others() |
+      "[" ~> rep1sep(idnExpr, ",") <~ "]" ^^ Subset
+
+  lazy val forStmt : PackratParser[ForStmt] =
+    (keyword("for") ~> idnDef) ~ ("=" ~> expression) ~ (keyword("to") ~>
+      expression) ~ opt(keyword("step") ~> expression) ~ statement ^^ ForStmt
 
   lazy val funCallStmt : PackratParser[FunCallStmt] =
-    (idnUse <~ "(") ~ (repsep(expression, ",") <~ ")") <~
-      ";" ^^ FunCallStmt
+    funCallExpr <~ ";" ^^ FunCallStmt
 
   lazy val returnStmt : PackratParser[ReturnStmt] =
-    "return" ~> opt("(" ~> expression <~ ")") <~ ";" ^^ ReturnStmt
+    keyword("return") ~> opt("(" ~> expression <~ ")") <~ ";" ^^ ReturnStmt
 
-  // FIXME add a parser for `cell` statements here
+  lazy val cellStmt : PackratParser[CellStmt] =
+    keyword("cell") ~> coordExpr ~ statement ^^ CellStmt
 
   // Expression parsers.
   // Precidence and associativity rules implemented in the
@@ -116,18 +137,33 @@ class SyntaxAnalysis (positions : Positions)
       expression2
 
   lazy val expression2 : PackratParser[Expression] =
-    factor
+    expression1 ~ ("==" ~> expression1) ^^ EqualExpr |
+      expression1 ~ ("<=" ~> expression1) ^^ LessEqExpr |
+      expression1 ~ (">=" ~> expression1) ^^ GreaterEqExpr |
+      expression1 ~ ("<" ~> expression1) ^^ LessExpr |
+      expression1 ~ (">" ~> expression1) ^^ GreaterExpr |
+      expression1
 
-  // FIXME complete this expression parser.
+  lazy val expression1 : PackratParser[Expression] =
+    expression1 ~ ("+" ~> expression0) ^^ PlusExpr |
+      expression1 ~ ("-" ~> expression0) ^^ MinusExpr |
+      expression0
+
+  lazy val expression0 : PackratParser[Expression] =
+    expression0 ~ ("*" ~> factor) ^^ MultExpr |
+      expression0 ~ ("/" ~> factor) ^^ DivExpr |
+      expression0 ~ ("%" ~> factor) ^^ ModExpr |
+      factor
 
   lazy val factor : PackratParser[Expression] =
-    "true" ^^ (_ => TrueExpr()) |
-      "false" ^^ (_ => FalseExpr()) |
+    "true" ^^^ TrueExpr() |
+      "false" ^^^ FalseExpr() |
       "!" ~> factor ^^ NotExpr |
       "-" ~> factor ^^ NegExpr |
       "+" ~> factor |
       "(" ~> expression <~ ")" | leaf
 
-  // FIXME add a parser for coordinate expressions here.
+  lazy val coordExpr : PackratParser[CoordExpr] =
+    "[" ~> rep1sep(expression, ",") <~ "]" ^^ CoordExpr
 
 }
