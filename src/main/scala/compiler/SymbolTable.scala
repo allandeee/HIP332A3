@@ -11,7 +11,9 @@
 
 package compiler
 
-import org.bitbucket.inkytonik.kiama.util.Environments
+import org.bitbucket.inkytonik.kiama._
+
+import util.Environments
 
 /**
  * Symbol table module containing facilities for creating and
@@ -21,7 +23,7 @@ object SymbolTable extends Environments {
 
   import HipsterTree._
   import ConstEval._
-  import org.bitbucket.inkytonik.kiama.util.Entity
+  import util.Entity
 
   // Entities describing defined identifiers.
 
@@ -64,13 +66,13 @@ object SymbolTable extends Environments {
   case class Constant(tipe : Type, exp : Expression) extends TypedEntity
 
   /**
-    * 
+    * Common base class for entities that represent information
+    * about functions (user defined or builtin) 
     */
   abstract sealed class Applicable extends TypedEntity {
     def paramTipes : Vector[Type]
     def numParams = paramTipes.length
   }
-
 
   /**
     * A function entity. Encapsulates the declared type signature

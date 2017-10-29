@@ -89,4 +89,68 @@ class SemanticTests extends ParseTests with Messaging {
         fail ("no position for message value")
     }
   }
+
+  // Most of the tests of type attribution work by triggering a type error
+  // and then using the reported types in the resulting message to verify
+  // either an expected or inferred type.
+
+  // The following assertion methods support this approach, by using
+  // a regular expression to analyse a type error message and extract
+  // the reported expected and inferred types.
+
+  /**
+    * Regexp to analyse type error messages.
+    */
+  val TypeErrorRegex =
+    """^type error, expecting ('.+?'( or '.+?')*) found '(.+?)'$""".r
+  val typeRegex = """'(.+?)'""".r
+
+  /**
+    * Assert that a message is a type error with specified list of
+    * expected types.
+    */
+  def assertTypeErrorWithExpectedType (
+    messages : Messages, index : Int,
+    line : Int, column : Int, tipes : Set[String]) : Unit = {
+    val m = messages(index)
+
+    m.label match {
+      case TypeErrorRegex(exp,_,_) =>
+        val found =
+          (for(m <- typeRegex findAllMatchIn exp) yield m.group(1)).toSet
+        found shouldBe tipes
+      case _ => fail("not a type error message")
+    }
+
+    positions.getStart (m.value) match {
+      case Some (posn) =>
+        posn.line shouldBe line
+        posn.column shouldBe column
+      case _ =>
+        fail ("no position for message value")
+    }
+  }
+
+  /**
+    * Assert that a message is a type error with specified 
+    * inferred type.
+    */
+  def assertTypeErrorWithInferredType (
+    messages : Messages, index : Int,
+    line : Int, column : Int, tipe : String) : Unit = {
+    val m = messages(index)
+
+    m.label match {
+      case TypeErrorRegex(_,_,inf) => inf shouldBe tipe
+      case _ => fail("not a type error message")
+    }
+
+    positions.getStart (m.value) match {
+      case Some (posn) =>
+        posn.line shouldBe line
+        posn.column shouldBe column
+      case _ =>
+        fail ("no position for message value")
+    }
+  }
 }

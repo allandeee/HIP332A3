@@ -12,7 +12,7 @@ version := "0.1"
 
 // Scala compiler settings
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.3"
 
 scalacOptions :=
     Seq(

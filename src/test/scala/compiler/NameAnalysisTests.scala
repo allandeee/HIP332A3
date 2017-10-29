@@ -177,8 +177,8 @@ class NameAnalysisTests extends SemanticTests {
                 |  int c = cos(10.1); 
                 |  return(abs(floor(c))); }
                 |initialiser blurg {
-                |  int f = frnd(10.5);
-                |  int r = round(-frnd(4.5));
+                |  int f = frnd();
+                |  int r = round(-frnd());
                 |}
                 """.stripMargin)
     assert(messages.length === 5, "expecting five errors")
@@ -330,7 +330,7 @@ class NameAnalysisTests extends SemanticTests {
                 |neighbourhood N = [0,1];
                 |state {}
                 |function f(int x, float y, boolean b, neighbour n) {}
-                |int x = 0; float y = 1; boolean b = false; neighbour n = me;
+                |int x = 0; float y = 1; boolean b = false;
                 |updater { }
                 |mapper { return(0); }
                 """.stripMargin)
@@ -353,7 +353,7 @@ class NameAnalysisTests extends SemanticTests {
     assertMessage(messages, 0, 7, 28, "'test' is not declared at this point")
   }
 
-  test("check that that multiple definition error is emitted by an initialiser declaration") {
+  test("check that a multiple definition error is emitted by an initialiser declaration") {
     val messages = 
       semanticTestInline ("""
                 |dimension (100,100);
@@ -500,17 +500,16 @@ class NameAnalysisTests extends SemanticTests {
       semanticTestInline ("""
                 |dimension (100,100);
                 |neighbourhood N = [0,1], S = [0,-1];
-                |neighbour friend = N;
                 |state {}
                 |updater {
                 |  neighbour t = me;
-                |  iterate x over [N, S, t, friend]
+                |  iterate x over [N, S, t, me]
                 |    t = x;
                 |}
                 |mapper { return(0); }
                 """.stripMargin)
     assert(messages.length === 1, "expecting one error")
-    assertMessage(messages, 0, 8, 25, "non-constant identifier in neighbour subset")
+    assertMessage(messages, 0, 7, 25, "non-constant identifier in neighbour subset")
   }
 
   // Test to make sure that variable declarations are always enclosed in

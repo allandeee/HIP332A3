@@ -11,25 +11,21 @@
 
 package compiler
 
-import org.bitbucket.inkytonik.kiama.attribution.Attribution
+import org.bitbucket.inkytonik.kiama._
 
 /**
   * Attribute definitions for Hipster name analysis.
   */
-trait NameAnalysis extends Attribution {
+trait NameAnalysis extends AttributionUtils {
 
   self : TypeAnalysis =>
 
   import HipsterTree._
   import SymbolTable._
   import ConstEval._
-  import org.bitbucket.inkytonik.kiama.util.{
-    Entity, MultipleEntity, UnknownEntity}
-
-  import scala.reflect.ClassTag
+  import util.{Entity, MultipleEntity, UnknownEntity}
 
   def tree : HipsterTree
-
 
   /**
     * The declared dimension of the automaton, which we propagate
@@ -70,7 +66,7 @@ trait NameAnalysis extends Attribution {
           ("floor", BuiltIn(IntType(), Vector(FloatType()), false)),
           ("ceil", BuiltIn(IntType(), Vector(FloatType()), false)),
           ("rnd", BuiltIn(IntType(), Vector(IntType()), true)),
-          ("frnd", BuiltIn(FloatType(), Vector(FloatType()), true)))
+          ("frnd", BuiltIn(FloatType(), Vector(), true)))
 
       // Plumbing for constructs that open a new scope.
 
@@ -304,37 +300,4 @@ trait NameAnalysis extends Attribution {
       case _ =>
         UnknownEntity()
     }
-
-  // A few utility functions.
-
-  /**
-    * Test to see if the previous sibling node to a given node 
-    * has a specified type. Sometimes of use in pattern guards.
-    */
-  def prevIsOfType[T](n : HipsterNode)(implicit tag : ClassTag[T]) =
-    n match {
-      case tree.prev(_ : T) => true
-      case _ => false
-    }
-
-  /**
-    * Test to see if the next sibling node to a given node 
-    * has a specified type. Sometimes of use in pattern guards.
-    */
-  def nextIsOfType[T](n : HipsterNode)(implicit tag : ClassTag[T]) =
-    n match {
-      case tree.next(_ : T) => true
-      case _ => false
-    }
-
-  /**
-    * Test to see if the parent node of a given node 
-    * has a specified type. Sometimes of use in pattern guards.
-    */
-  def parentIsOfType[T](n : HipsterNode)(implicit tag : ClassTag[T]) =
-    n match {
-      case tree.parent(_ : T) => true
-      case _ => false
-    }
-
 }

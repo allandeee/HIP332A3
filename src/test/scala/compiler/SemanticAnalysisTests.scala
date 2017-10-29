@@ -214,8 +214,8 @@ class SemanticAnalysisTests extends SemanticTests {
                 |mapper { return(0); }
                 """.stripMargin)
     assert(messages.length === 2, "expecting two errors")
-    assertMessage(messages, 0, 14, 3, "updater can't call this function")
-    assertMessage(messages, 1, 16, 11, "updater can't call this function")
+    assertMessage(messages, 0, 14, 3, "updater can't call an initialiser function")
+    assertMessage(messages, 1, 16, 11, "updater can't call an initialiser function")
   }
 
     test("check use of `cell` in updater") {
@@ -257,8 +257,8 @@ class SemanticAnalysisTests extends SemanticTests {
                 |mapper { return(0); }
                 """.stripMargin)
     assert(messages.length === 2, "expecting two errors")
-    assertMessage(messages, 0, 12, 3, "updater can't call this function")
-    assertMessage(messages, 1, 14, 11, "updater can't call this function")
+    assertMessage(messages, 0, 12, 3, "updater can't call an initialiser function")
+    assertMessage(messages, 1, 14, 11, "updater can't call an initialiser function")
   }
 
   test("check direct and indirect call to tainted built-in in updater") {
@@ -267,7 +267,7 @@ class SemanticAnalysisTests extends SemanticTests {
                 |dimension (100,100);
                 |neighbourhood N = [0,1];
                 |state { int count = 0; }
-                |function f() { count = floor(frnd(1000.75)); }
+                |function f() { count = floor(frnd()); }
                 |updater {
                 |  count = rnd(10);
                 |  f();
@@ -275,8 +275,8 @@ class SemanticAnalysisTests extends SemanticTests {
                 |mapper { return(0); }
                 """.stripMargin)
     assert(messages.length === 2, "expecting two errors")
-    assertMessage(messages, 0, 7, 11, "updater can't call this function")
-    assertMessage(messages, 1, 8, 3, "updater can't call this function")
+    assertMessage(messages, 0, 7, 11, "updater can't call a tainted function")
+    assertMessage(messages, 1, 8, 3, "updater can't call a tainted function")
   }
 
   test("check non-me state assignment in updater") {
@@ -305,42 +305,6 @@ class SemanticAnalysisTests extends SemanticTests {
     assertMessage(messages, 2, 14, 5, "updater can't assign to state of neighbour cell")
   }
 
-  test("check error reporting from attempt to assign to state of non-cell identifier") {
-    val messages =
-      semanticTestInline ("""
-                |dimension (100,100);
-                |neighbourhood N = [0,1];
-                |state { int count = 0; }
-                |updater {
-                |  int c = 0;
-                |  c:count = 10;
-                |}
-                |mapper { return(0); }
-                """.stripMargin)
-    assert(messages.length === 1, "expected one error")
-    assertMessage(messages, 0, 7, 3, "type error, expecting 'neighbour' found 'int'")
-  }
-
-  test("check assignment to me state in updater") {
-    val messages =
-      semanticTestInline ("""
-                |dimension (100,100);
-                |neighbourhood N = [0,1], S = [0,-1];
-                |state { int count = 0; }
-                |neighbour anotherme = me;
-                |updater {
-                |  { 
-                |    me:count = S:count; 
-                |      // write to me and read from neighbour, OK
-                |  }
-                |  anotherme:count = 5;  
-                |      // write to constant alias to me, OK
-                |}
-                |mapper { return(0); }
-                """.stripMargin)
-    assert(messages.length === 0, "expecting no errors")
-  }
-
   test("check indirect use of non-me state assignment in updater") {
     val messages =
       semanticTestInline ("""
@@ -359,28 +323,10 @@ class SemanticAnalysisTests extends SemanticTests {
                 |}
                 |mapper { return(0); }
                 """.stripMargin)
-    assert(messages.length === 3, "expecting two errors")
-    assertMessage(messages, 0, 11, 3, "updater can't call this function")
-    assertMessage(messages, 1, 12, 3, "updater can't call this function")
-    assertMessage(messages, 2, 13, 11, "updater can't call this function")
-  }
-
-  test("check current cell state assignment in updater") {
-    val messages =
-      semanticTestInline ("""
-                |dimension (100,100);
-                |boolean const = true;
-                |neighbourhood N = [0,1], S = [0,-1];
-                |neighbour T = me;
-                |state { int count = 0; }
-                |updater {
-                |  count = 30;
-                |  me:count = 10;
-                |  T:count = 20;
-                |}
-                |mapper { return(0); }
-                """.stripMargin)
-    assert(messages.length === 0, "expecting no errors")
+    assert(messages.length === 3, "expecting three errors")
+    assertMessage(messages, 0, 11, 3, "function called by updater makes illegal state access")
+    assertMessage(messages, 1, 12, 3, "function called by updater makes illegal state access")
+    assertMessage(messages, 2, 13, 11, "function called by updater makes illegal state access")
   }
 
   // Tests of errors that arise from the inappropriate use of `for`, `cell`
@@ -425,8 +371,8 @@ class SemanticAnalysisTests extends SemanticTests {
                 |  return(0); }
                 """.stripMargin)
     assert(messages.length === 2, "expecting two errors")
-    assertMessage(messages, 0, 14, 3, "colour mapper can't call this function")
-    assertMessage(messages, 1, 15, 11, "colour mapper can't call this function")
+    assertMessage(messages, 0, 14, 3, "colour mapper can't call an initialiser function")
+    assertMessage(messages, 1, 15, 11, "colour mapper can't call an initialiser function")
   }
 
     test("check use of `cell` in colour mapper") {
@@ -466,8 +412,8 @@ class SemanticAnalysisTests extends SemanticTests {
                 |  return(0); }
                 """.stripMargin)
     assert(messages.length === 2, "expecting two errors")
-    assertMessage(messages, 0, 12, 3, "colour mapper can't call this function")
-    assertMessage(messages, 1, 13, 11, "colour mapper can't call this function")
+    assertMessage(messages, 0, 12, 3, "colour mapper can't call an initialiser function")
+    assertMessage(messages, 1, 13, 11, "colour mapper can't call an initialiser function")
   }
 
   test("check state assignment in colour mapper") {
@@ -506,9 +452,10 @@ class SemanticAnalysisTests extends SemanticTests {
                 |  int i = h() + 100;
                 |  return(0); }
                 """.stripMargin)
-    assert(messages.length === 2, "expecting two errors")
-    assertMessage(messages, 0, 12, 3, "colour mapper can't call this function")
-    assertMessage(messages, 1, 13, 11, "colour mapper can't call this function")
+    assert(messages.length === 3, "expecting three errors")
+    assertMessage(messages, 0, 12, 3, "colour mapper can't call an initialiser function")
+    assertMessage(messages, 1, 12, 3, "function called by colour mapper makes illegal state access")
+    assertMessage(messages, 2, 13, 11, "function called by colour mapper makes illegal state access")
   }
 
   test("check state access in colour mapper") {
@@ -519,20 +466,18 @@ class SemanticAnalysisTests extends SemanticTests {
                 |neighbourhood N = [0,1], S = [0,-1];
                 |state { int count = 0; }
                 |updater {}
-                |neighbour anotherme = me;
                 |mapper { 
                 |  int temp = 0;
-                |  { temp = N:count; temp = me:count; }
-                |  temp = anotherme:count;
+                |  { temp = N:count; }
                 |  temp = (count + 30) % 20;
                 |  temp = (S:count + 40) * 20;
                 |  iterate x over others temp = temp + x:count;
                 |  return(0); }
                 """.stripMargin)
     assert(messages.length === 3, "expecting three errors")
-    assertMessage(messages, 0, 10, 12, "colour mapper can't read state of neighbour cell")
-    assertMessage(messages, 1, 13, 11, "colour mapper can't read state of neighbour cell")
-    assertMessage(messages, 2, 14, 39, "colour mapper can't read state of neighbour cell")
+    assertMessage(messages, 0, 9, 12, "colour mapper can't read state of neighbour cell")
+    assertMessage(messages, 1, 11, 11, "colour mapper can't read state of neighbour cell")
+    assertMessage(messages, 2, 12, 39, "colour mapper can't read state of neighbour cell")
   }
 
   test("check indirect state access in colour mapper") {
@@ -543,7 +488,6 @@ class SemanticAnalysisTests extends SemanticTests {
                 |neighbourhood N = [0,1], S = [0,-1];
                 |state { int count = 0; }
                 |updater {}
-                |neighbour anotherme = me;
                 |function f(neighbour p) { int temp = p:count; }
                 |function g() { f(me); }
                 |function h() : int { return(S:count); }
@@ -554,10 +498,10 @@ class SemanticAnalysisTests extends SemanticTests {
                 |  return(10 + h() * 20 * k()); }
                 """.stripMargin)
     assert(messages.length === 4, "expecting four errors")
-    assertMessage(messages, 0, 13, 3, "colour mapper can't call this function")
-    assertMessage(messages, 1, 14, 3,  "colour mapper can't call this function")
-    assertMessage(messages, 2, 15, 15,  "colour mapper can't call this function")
-    assertMessage(messages, 3, 15, 26,  "colour mapper can't call this function")
+    assertMessage(messages, 0, 12, 3, "function called by colour mapper makes illegal state access")
+    assertMessage(messages, 1, 13, 3,  "function called by colour mapper makes illegal state access")
+    assertMessage(messages, 2, 14, 15,  "function called by colour mapper makes illegal state access")
+    assertMessage(messages, 3, 14, 26,  "function called by colour mapper makes illegal state access")
   }
 
   test("check direct and indirect call to tainted built-in from colour mapper") {
@@ -566,7 +510,7 @@ class SemanticAnalysisTests extends SemanticTests {
                 |dimension (100,100);
                 |neighbourhood N = [0,1];
                 |state { boolean alive = false; }
-                |function f() : int { return (floor(frnd(1000.75))); }
+                |function f() : int { return (floor(frnd())); }
                 |updater {}
                 |mapper { 
                 |  if alive then
@@ -576,8 +520,8 @@ class SemanticAnalysisTests extends SemanticTests {
                 |}
                 """.stripMargin)
     assert(messages.length === 2, "expecting two errors")
-    assertMessage(messages, 0, 9, 13, "colour mapper can't call this function")
-    assertMessage(messages, 1, 11, 13, "colour mapper can't call this function")
+    assertMessage(messages, 0, 9, 13, "colour mapper can't call a tainted function")
+    assertMessage(messages, 1, 11, 13, "colour mapper can't call a tainted function")
   }
 
   // Tests of errors that arise from access to state from outside of
@@ -595,10 +539,12 @@ class SemanticAnalysisTests extends SemanticTests {
                 |  alive = S:alive;
                 |  N:alive = true; }
                 """.stripMargin)
-    assert(messages.length === 3, "expecting three errors")
-    assertMessage(messages, 0, 8, 3, "initialiser can't read or write state outside of the body of a `cell` statement")
-    assertMessage(messages, 1, 8, 11, "initialiser can't read or write state outside of the body of a `cell` statement")
-    assertMessage(messages, 2, 9, 3, "initialiser can't read or write state outside of the body of a `cell` statement")
+    assert(messages.length === 5, "expecting five errors")
+    assertMessage(messages, 0, 8, 3, "initialiser can't access state outside of the body of a `cell` statement")
+    assertMessage(messages, 1, 8, 11, "initialiser can't reference neighbour symbol outside of the body of a `cell` statement")
+    assertMessage(messages, 2, 8, 13, "initialiser can't access state outside of the body of a `cell` statement")
+    assertMessage(messages, 3, 9, 3, "initialiser can't reference neighbour symbol outside of the body of a `cell` statement")
+    assertMessage(messages, 4, 9, 5, "initialiser can't access state outside of the body of a `cell` statement")
   }
 
   test("check indirect access to state outside of `cell` statement in initialiser") {
@@ -619,8 +565,8 @@ class SemanticAnalysisTests extends SemanticTests {
                 |}
                 """.stripMargin)
     assert(messages.length === 2, "expecting two errors")
-    assertMessage(messages, 0, 12, 3, "initialiser can't call this function outside of the body of a `cell` statement")
-    assertMessage(messages, 1, 13, 20, "initialiser can't call this function outside of the body of a `cell` statement")
+    assertMessage(messages, 0, 10, 22, "general function can't call a cell function")
+    assertMessage(messages, 1, 12, 3, "initialiser can't call a cell function")
   }
 
   test("check access to state inside `cell` statement in initialiser") {
@@ -639,10 +585,12 @@ class SemanticAnalysisTests extends SemanticTests {
                 |  cell [10,20] N:alive = S:alive;
                 |  N:alive = true; }
                 """.stripMargin)
-    assert(messages.length === 3, "expecting three errors")
-    assertMessage(messages, 0, 8, 3, "initialiser can't read or write state outside of the body of a `cell` statement")
-    assertMessage(messages, 1, 8, 11, "initialiser can't read or write state outside of the body of a `cell` statement")
-    assertMessage(messages, 2, 13, 3, "initialiser can't read or write state outside of the body of a `cell` statement")
+    assert(messages.length === 5, "expecting five errors")
+    assertMessage(messages, 0, 8, 3, "initialiser can't access state outside of the body of a `cell` statement")
+    assertMessage(messages, 1, 8, 11, "initialiser can't reference neighbour symbol outside of the body of a `cell` statement")
+    assertMessage(messages, 2, 8, 13, "initialiser can't access state outside of the body of a `cell` statement")
+    assertMessage(messages, 3, 13, 3, "initialiser can't reference neighbour symbol outside of the body of a `cell` statement")
+    assertMessage(messages, 4, 13, 5, "initialiser can't access state outside of the body of a `cell` statement")
   }
 
   test("check indirect access to state inside `cell` statement in initialiser") {
@@ -667,9 +615,10 @@ class SemanticAnalysisTests extends SemanticTests {
                 |  if temp <= 1 then g();
                 |               else h(); }
                 """.stripMargin)
-    assert(messages.length === 2, "expecting two errors")
-    assertMessage(messages, 0, 13, 3, "initialiser can't call this function outside of the body of a `cell` statement")
-    assertMessage(messages, 1, 18, 21, "initialiser can't call this function outside of the body of a `cell` statement")
+    assert(messages.length === 3, "expecting three errors")
+    assertMessage(messages, 0, 10, 22, "general function can't call a cell function")
+    assertMessage(messages, 1, 11, 33, "initialiser function can't call a cell function")
+    assertMessage(messages, 2, 13, 3, "initialiser can't call a cell function")
   }
 
   // Test missing `return` statement errors.

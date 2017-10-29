@@ -50,7 +50,7 @@ class SyntaxAnalysis (positions : Positions)
     (idnDef <~ "=") ~ coordExpr ^^ NeighbourDecl
 
   lazy val neighbourhoodDecl : PackratParser[NeighbourhoodDecl] =
-    keyword("neighbourhood") ~>rep1sep(nbrDef,",") <~ ";" ^^ NeighbourhoodDecl
+    keyword("neighbourhood") ~> rep1sep(nbrDef,",") <~ ";" ^^ NeighbourhoodDecl
 
   lazy val stateDecl : PackratParser[StateDecl] =
     keyword("state") ~> "{" ~> rep(varDecl) <~ "}" ^^ StateDecl
@@ -131,7 +131,7 @@ class SyntaxAnalysis (positions : Positions)
   // Precidence and associativity rules implemented in the
   // time honoured fashion.
 
-  override lazy val expression : PackratParser[Expression] =
+  lazy val expression : PackratParser[Expression] =
     expression ~ ("&&" ~> expression2) ^^ AndExpr |
       expression ~ ("||" ~> expression2) ^^ OrExpr |
       expression2

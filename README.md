@@ -480,7 +480,7 @@ The following sections explain the semantic rules of Hipster. A couple of plot p
 
 * As discussed above, there are certain statements and functions in Hipster that may **only** be executed from within an initialiser function. These include things like the `cell` and `for` statements, whose use is disallowed inside the cell updater and colour mapper functions. The use of some pre-loaded prelude functions, such as the random number generator, are also prohibited in these locations. We say that a statement or function which **may** be used in the updater function is _clean_, otherwise it is said to be _tainted_. It is the role of the semantic analyser to make sure that only clean functions may be executed from within the cell updater or colour mapper.
 
-* In a similar fashion, access to the state fields of various cells is restricted in a number of ways. For example, while updater code my access the state of neighbour cells it may only write to the state of the current cell (`me`). On the other hand, code in the colour mapper may only access the state of the current cell and it may not write to the state of **any** cell.
+* In a similar fashion, access to the state fields of various cells is restricted in a number of ways. For example, while updater code may access the state of neighbour cells it may only write to the state of the current cell (`me`). On the other hand, code in the colour mapper may only access the state of the current cell and it may not write to the state of **any** cell.
 
 ### Name analysis ###
 
@@ -609,7 +609,7 @@ If a name is declared inside the scope of another declaration of that same name,
 
 the uses of `i` in line 5 refers to the variable declared in line 4, rather than that declared on line 2. What is more, the uses of `i` in line 7 refer to the variable declared in line 2.
 
-Note that our rules about the scopes that apply to the initialiser expressions in variable declarations imply that is the following code
+Note that our rules about the scopes that apply to the expressions on the right-hand side of `=` symbols in variable declarations imply that in the following code
 
      1 updater {
      2   int i = 10;
@@ -741,7 +741,7 @@ Any variable, constant or parameter must be declared to have one of these types.
      
 5. The operands of the equality operator `==` can be any of the four types and those types must either both be `boolean`, both be `neighbour`, or both be of one of the numeric types `int` or `float`. The type of an equality expression `expr1 == expr2` is `boolean`.
 
-6. The operands of any other rational operator (`<`, `>`, `<=`, or `=>`) must be of type `boolean`, `int` or `float` and those types must either both be boolean, or both be one of the numeric types `int` or `float`. The type of a relational expression `expr1 rop expr2` is `boolean`.
+6. The operands of any other rational operator (`<`, `>`, `<=`, or `=>`) must be of type `boolean`, `int` or `float` and those types must either both be `boolean`, or both be one of the numeric types `int` or `float`. The type of a relational expression `expr1 rop expr2` is `boolean`.
 
 7. The operands of any boolean operator (`||`, `&&`, or `!`) must be of type `boolean` and the type of a boolean expression `expr1 bop expr1` is `boolean`.
 

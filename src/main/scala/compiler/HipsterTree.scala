@@ -297,7 +297,7 @@ object HipsterTree {
   /**
     * Superclass of the boolean constants.
     */
-  sealed abstract class BoolExpr() extends Expression
+  sealed abstract class BoolExpr extends Expression
 
   /**
     * Boolean TRUE expression.
@@ -312,7 +312,7 @@ object HipsterTree {
   /**
     * Common interface for binary expressions.
     */
-  abstract class BinaryExpression extends Expression {
+  sealed abstract class BinaryExpression extends Expression {
     def left : Expression
     def right : Expression
   }
@@ -320,24 +320,24 @@ object HipsterTree {
   /**
     * Common interface for unary expressions.
     */
-  abstract class UnaryExpression extends Expression {
+  sealed abstract class UnaryExpression extends Expression {
     def exp : Expression
   }
 
   /**
     * Trait to label arithmetic operator classes.
     */
-  trait ArithmeticOp extends Expression
+  sealed trait ArithmeticOp extends Expression
 
   /**
     * Trait to label boolean operator classes.
     */
-  trait BooleanOp extends Expression
+  sealed trait BooleanOp extends Expression
 
   /**
     * Trait to label relational operator classes.
     */
-  trait RelationalOp extends Expression
+  sealed trait RelationalOp extends Expression
 
   /**
     * Addition expression.

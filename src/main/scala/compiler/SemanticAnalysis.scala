@@ -11,21 +11,21 @@
 
 package compiler
 
+import org.bitbucket.inkytonik.kiama._
+
 import HipsterTree.HipsterTree
-import org.bitbucket.inkytonik.kiama.attribution.Attribution
+import attribution.Attribution
 
 /**
   * Attribute definitions of the Hipster semantic analyser.
   */
 class SemanticAnalysis(val tree : HipsterTree) extends Attribution
-    with NameAnalysis with TypeAnalysis {
+    with NameAnalysis with TypeAnalysis with StructuralAnalysis {
   
   import HipsterTree._
   import SymbolTable._
-  import ConstEval._
-  import org.bitbucket.inkytonik.kiama.util.Messaging.{
-    check, checkUse, collectMessages, Messages, message, noMessages}
-  import org.bitbucket.inkytonik.kiama.util.{MultipleEntity, UnknownEntity}
+  import util.Messaging.{check, checkUse, collectMessages, Messages, message}
+  import util.{MultipleEntity, UnknownEntity}
 
   // Error reporting.
 
@@ -71,41 +71,54 @@ class SemanticAnalysis(val tree : HipsterTree) extends Attribution
                   !parentIsOfType[FunCallStmt](f) && v.tipe == UnknownType())
               case _  => message(f,
                 "malformed function call: function name expected")} ++
-            message(f, "colour mapper can't call this function" ,
-              inMapper(f) && (
-                mapperStateAccessFlag(f) ||
-                  taintedByBuiltinFlag(f) ||
-                  containsForOrCellFlag(f))) ++
-            message(f, "updater can't call this function",
-              inUpdater(f) && (
-                updaterStateAccessFlag(f) ||
-                  taintedByBuiltinFlag(f) ||
-                  containsForOrCellFlag(f))) ++
-            message(f, "initialiser can't call this function outside of " +
-              "the body of a `cell` statement",
-              inInitialiserOutsideCell(f) &&
-                initialiserStateAccessFlag(f))
+            message(f, "colour mapper can't call a tainted function" ,
+              inMapper(f) && taintedByBuiltinFlag(f)) ++
+            message(f, "function called by colour mapper makes illegal " ++
+              "state access", inMapper(f) && mapperStateAccessFlag(f)) ++
+            message(f, "colour mapper can't call an initialiser function" ,
+              inMapper(f) && isInitialiserFunction(i)) ++
+            message(f, "updater can't call a tainted function",
+              inUpdater(f) && taintedByBuiltinFlag(f)) ++
+            message(f, "function called by updater makes illegal " ++
+              "state access", inUpdater(f) && updaterStateAccessFlag(f)) ++
+            message(f, "updater can't call an initialiser function",
+              inUpdater(f) && isInitialiserFunction(i)) ++
+            message(f, "initialiser can't call a cell function",
+              inInitialiser(f) && isCellFunction(i)) ++
+            message(f, "general function can't call a cell function",
+              insideGeneralFunction(f) && isCellFunction(i)) ++
+            message(f, "initialiser function can't call a cell function",
+              insideInitialiserFunction(f) && isCellFunction(i)) ++
+            message(f, "cell function can't call an initialiser function",
+              insideCellFunction(f) && isInitialiserFunction(i))
 
           case n : LValue =>
             check(n) {
               // Verify that neighbour state expressions 'nbr:state' have
               // operands of the right kind.
-              case NeighbourExpr(i,s) =>
-                checkUse(entity(s)) {
-                  case _ : StateField => noMessages
-                  case _ => message(s, "right hand operand of ':' must " +
-                      "be a state field identifier")
-                } 
+              case NeighbourExpr(_,s)
+                  if (!entity(s).isInstanceOf[StateField]) =>
+                message(s, "right hand operand of ':' must be a state " +
+                  "field identifier")
+              case NeighbourExpr(_,s)
+                  if (inInitialiser(n) && !isInCellBody(n)) =>
+                message(s, "initialiser can't access state outside of the " +
+                  "body of a `cell` statement")
+              case IdnExpr(s)
+                  if (inInitialiser(n) && !isInCellBody(n))=>
+                message(n, "initialiser can't access state outside of the " +
+                  "body of a `cell` statement",
+                  entity(s).isInstanceOf[StateField]) ++
+                message(n, "initialiser can't reference neighbour symbol " +
+                  "outside of the body of a `cell` statement",
+                  entity(s).isInstanceOf[Neighbour])
             } ++
             message(n, "colour mapper can't write to the state of any cell",
-              inMapper(n) && mapperStateAccessFlag(n) && lvalueFlag(n)) ++
+              inMapper(n) && mapperStateAccessFlag(n) && isOnTheLeft(n)) ++
             message(n, "colour mapper can't read state of neighbour cell",
-              inMapper(n) && mapperStateAccessFlag(n) && !lvalueFlag(n)) ++
+              inMapper(n) && mapperStateAccessFlag(n) && !isOnTheLeft(n)) ++
             message(n, "updater can't assign to state of neighbour cell",
-              inUpdater(n) && updaterStateAccessFlag(n)) ++
-            message(n, "initialiser can't read or write state outside of " +
-              "the body of a `cell` statement",
-              inInitialiserOutsideCell(n) && initialiserStateAccessFlag(n))
+              inUpdater(n) && updaterStateAccessFlag(n))
         } ++
         // Also type errors.
         message(e, "type error, expecting " +
@@ -184,6 +197,9 @@ class SemanticAnalysis(val tree : HipsterTree) extends Attribution
 
       // Top level declaration related errors.
 
+      case d @ ConstantDecl(NeighbourType(), _, _) =>
+        message(d, "can't alias a neighbour symbol in a constant declaration")
+
       // Check that the coodinate expressions in a neighbourhood
       // declaration have constant ordinates.
       case NeighbourDecl(_, CoordExpr(v)) =>
@@ -194,7 +210,10 @@ class SemanticAnalysis(val tree : HipsterTree) extends Attribution
       // with a return value contains a `return` statement.
       case d @ FunctionDecl(_, _, Some(_), b) =>
         message(d, "missing `return` in body of function declaration",
-          !b.exists(returnFlag))
+          !b.exists(returnFlag)) ++
+        message(d, "illegal function, contains `for` or `cell` statement " ++
+          "and an unguarded reference to a neighbour or state field.",
+          isIllegalFunction(d))
 
       // Verify that every control path in the body of the colour
       // mapper contains a `return` statement.
@@ -229,258 +248,6 @@ class SemanticAnalysis(val tree : HipsterTree) extends Attribution
           case Vector() => message(d, "missing 'mapper' declaration")
           case _ +: s => s.flatMap(t =>
             message(t, "repeated 'mapper' declaration"))})
-    }
-
-  /**
-    * Flag those statements that are guaranteed to cause a 
-    * return from the enclosing function.
-    */
-  val returnFlag : Statement => Boolean =
-    attr {
-      case ReturnStmt(_) => true
-
-      case IfStmt(_, t, Some(e)) => returnFlag(t) && returnFlag(e)
-
-      case IterateOverStmt(_, _, b) => returnFlag(b)
-      case CellStmt(_, b) => returnFlag(b)
-
-      case Block(b) => b.exists(returnFlag)
-
-      case _ => false
-    }
-
-  /**
-    * Flag those statements that are inaccessible because they
-    * are immediately preceeded, in the current code block, by 
-    * a statement that will always cause the current function to 
-    * return.
-    */
-  val inaccessible : Statement => Boolean =
-    attr {
-      case tree.prev.pair(n : Statement, l : Statement)
-          if parentIsOfType[Block](n) || parentIsOfType[TopLevelDecl](n) =>
-        returnFlag(l)
-      case _ => false
-    }
-
-  /**
-    * Flag to mark those values that appear on the left hand side of
-    * an assignment statement.
-    */
-  val lvalueFlag : LValue => Boolean =
-    attr {
-      case tree.parent.pair(n, AssignStmt(l, _)) if n eq l => true
-      case _ => false
-    }
-
-  /**
-    * Flag to mark those constructs whose bodies contain a `for` or `cell` 
-    * statement.
-    * 
-    * Is "heredetary" in the sense that a node of another kind is marked
-    * if one of its children is or if it is a call to a function whose 
-    * declaration is marked.
-    */
-  val containsForOrCellFlag : HipsterNode => Boolean =
-    attr {
-      // Mark all calls to...
-      case FunCallExpr(i, args) =>
-        (entity(i) match {
-          //... a function whose declarations is marked.
-          case Function(_, _, d) => containsForOrCellFlag(d)
-          case _ => false
-        }) || args.exists(containsForOrCellFlag)
-
-      // Mark `for` and `cell` statements.
-      case _ : ForStmt => true
-      case _ : CellStmt => true
-
-      // ... otherwise mark any node which has a child that is marked.
-      // In particular, nodes without children will not be marked.
-      case n => tree.child(n).exists(containsForOrCellFlag) 
-    }
-
-  /**
-    * Flag to mark those nodes that
-    *   * access the state field of a neighbour cell, or
-    *   * make an assignment to the state of any cell.
-    * 
-    * Is "heredetary" in the sense that a node of another kind is marked
-    * if one of its children is or if it is a call to a function whose 
-    * declaration is marked.
-    */
-  val mapperStateAccessFlag : HipsterNode => Boolean =
-    attr {
-      // Mark all neighbour expressions on left of assignment.
-      case n : NeighbourExpr if lvalueFlag(n) => true
-
-      // Mark all non-me neighbour expressions
-      case NeighbourExpr(IdnExpr(i),_) =>
-        entity(i) match {
-          case Neighbour(c) => !c.isMe
-          case Constant(_, e) =>
-            value(e) match {
-              case c : NeighbourVal => !c.isMe
-              case _ => false
-            }
-          case Variable(NeighbourType(), _) => true
-          case ControlVariable(NeighbourType()) => true
-          case StateField(NeighbourType(), _) => true
-          case Parameter(NeighbourType()) => true
-          case _ => false
-        }
-
-      // Mark all identifier expressions on the left of assignment
-      // statements whose identifier is declared to be a state field.
-      case n @ IdnExpr(i) if lvalueFlag(n) =>
-        entity(i) match {
-          case _ : StateField => true
-          case _ => false
-        }
-
-      // Mark all calls to functions whose declarations are marked.
-      case FunCallExpr(i, args) =>
-        (entity(i) match {
-          case Function(_, _, e) => mapperStateAccessFlag(e)
-          case _ => false
-        }) || args.exists(mapperStateAccessFlag)
-
-      // ... otherwise mark any node which has a child that is marked.
-      // In particular, nodes without children will not be marked.
-      case n => tree.child(n).exists(mapperStateAccessFlag)
-    }
-
-  /**
-    * Flag to mark those nodes that make an assignment to the state of
-    * a neighbour cell.
-    * 
-    * Is "heredetary" in the sense that a node of another kind is marked
-    * if one of its children is or if it is a call to a function whose 
-    * declaration is marked.
-    */
-  val updaterStateAccessFlag : HipsterNode => Boolean =
-    attr {
-      // Mark all non-me neighbour expressions on left of assignment.
-      case n @ NeighbourExpr(IdnExpr(i), _) if lvalueFlag(n) =>
-        entity(i) match {
-          case Neighbour(c) => !c.isMe
-          case Constant(_, e) =>
-            value(e) match {
-              case c : NeighbourVal => !c.isMe
-              case _ => false
-            }
-          case Variable(NeighbourType(), _) => true
-          case ControlVariable(NeighbourType()) => true
-          case StateField(NeighbourType(), _) => true
-          case Parameter(NeighbourType()) => true
-          case _ => false
-        }
-
-      // Mark all calls to functions whose declarations are marked.
-      case FunCallExpr(i, args) =>
-        (entity(i) match {
-          case Function(_, _, e) => updaterStateAccessFlag(e)
-          case _ => false
-        }) || args.exists(updaterStateAccessFlag) 
-
-      // ... otherwise mark any node which has a child that is marked.
-      // In particular, nodes without children will not be marked.
-      case n => tree.child(n).exists(updaterStateAccessFlag)
-    }
-
-  /**
-    * Flag to mark those nodes that read or write the state of a cell
-    * outside of the scope of the body of a `cell` statement.
-    * 
-    * Is "heredetary" in the sense that a node of another kind is marked
-    * if one of its children is or if it is a call to a function whose 
-    * declaration is marked.
-    */
-  val initialiserStateAccessFlag : HipsterNode => Boolean =
-    attr {
-      // Mark all neighbour expressions.
-      case n : NeighbourExpr => true
-
-      // Mark all identifier expressions whose identifier is declared
-      // to be a state field.
-      case IdnExpr(i) =>
-        entity(i) match {
-          case _ : StateField => true
-          case _ => false
-        }
-
-      // Mark all calls to functions whose declarations are marked.
-      case FunCallExpr(i, args) =>
-        (entity(i) match {
-          case Function(_, _, e) => initialiserStateAccessFlag(e)
-          case _ => false
-        }) || args.exists(initialiserStateAccessFlag)
-
-      // Mark a `cell` statement if one of its ordinates is marked.
-      // The marking of the body of a cell statement plays no part in
-      // determining the marking of that statement.
-      case CellStmt(CoordExpr(c), _) =>
-        c.exists(initialiserStateAccessFlag)
-
-      // ... otherwise mark any node which has a child that is marked.
-      // In particular, nodes without children will not be marked.
-      case n => tree.child(n).exists(initialiserStateAccessFlag)
-    }
-
-  /**
-    * Flag to mark those nodes that call a tainted built-in.
-    * 
-    * Is "heredetary" in the sense that a node of another kind is marked
-    * if one of its children is or if it is a call to a function whose 
-    * declaration is marked.
-    */
-  val taintedByBuiltinFlag : HipsterNode => Boolean =
-    attr {
-      // Mark all calls to...
-      case FunCallExpr(i, args) =>
-        (entity(i) match {
-          //... functions whose declarations are marked and ...
-          case Function(_, _, e) => taintedByBuiltinFlag(e)
-          //... built-ins that are marked as tainted.
-          case BuiltIn(_, _, b) => b
-          case _ => false
-        }) || args.exists(taintedByBuiltinFlag)
-
-      // ... otherwise mark any node which has a child that is marked.
-      // In particular, nodes without children will not be marked.
-      case n => tree.child(n).exists(taintedByBuiltinFlag)
-    }
-
-  /**
-    * Flag to mark nodes in an updater declaration.
-    */
-  val inUpdater : HipsterNode => Boolean =
-    attr {
-      case tree.parent(p : UpdaterDecl) => true
-      case tree.parent(p) => inUpdater(p)
-      case _ => false
-    }
-
-  /**
-    * Flag to mark nodes in a colour mapper declaration.
-    */
-  val inMapper : HipsterNode => Boolean =
-    attr {
-      case tree.parent(p : ColourMapperDecl) => true
-      case tree.parent(p) => inMapper(p)
-      case _ => false
-    }
-
-  /**
-    * Flag to mark nodes in an initaliser declaration that are not
-    * enclosed in the body of a `cell` statement.
-    */
-  val inInitialiserOutsideCell : HipsterNode => Boolean =
-    attr {
-      case tree.parent(_ : InitialiserDecl) => true
-      case tree.parent.pair(n, CellStmt(_,s)) if n eq s => false
-      case tree.parent(p) => inInitialiserOutsideCell(p)
-      case _ => false
     }
 }
 

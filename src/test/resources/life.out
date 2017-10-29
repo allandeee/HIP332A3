@@ -1,169 +1,413 @@
-HipsterProgram (
-    Vector (
-        ConstantDecl (IntType (), IdnDef ("width"), IntExpr (100)),
-        ConstantDecl (IntType (), IdnDef ("height"), IntExpr (100)),
-        DimDecl (
-            Vector (
-                CyclicDim (IdnExpr (IdnUse ("width"))),
-                BoundedDim (IdnExpr (IdnUse ("height"))))),
-        NeighbourhoodDecl (
-            Vector (
-                NeighbourDecl (
-                    IdnDef ("N"),
-                    CoordExpr (Vector (IntExpr (0), IntExpr (1)))),
-                NeighbourDecl (
-                    IdnDef ("S"),
-                    CoordExpr (Vector (IntExpr (0), NegExpr (IntExpr (1))))),
-                NeighbourDecl (
-                    IdnDef ("W"),
-                    CoordExpr (Vector (NegExpr (IntExpr (1)), IntExpr (0)))),
-                NeighbourDecl (
-                    IdnDef ("E"),
-                    CoordExpr (Vector (IntExpr (1), IntExpr (0)))),
-                NeighbourDecl (
-                    IdnDef ("NE"),
-                    CoordExpr (Vector (IntExpr (1), IntExpr (1)))),
-                NeighbourDecl (
-                    IdnDef ("SE"),
-                    CoordExpr (Vector (IntExpr (1), NegExpr (IntExpr (1))))),
-                NeighbourDecl (
-                    IdnDef ("SW"),
-                    CoordExpr (
-                        Vector (
-                            NegExpr (IntExpr (1)),
-                            NegExpr (IntExpr (1))))),
-                NeighbourDecl (
-                    IdnDef ("NW"),
-                    CoordExpr (Vector (NegExpr (IntExpr (1)), IntExpr (1)))))),
-        StateDecl (
-            Vector (
-                VarDecl (BoolType (), IdnDef ("alive"), Some (FalseExpr ())))),
-        UpdaterDecl (
-            Vector (
-                VarDecl (IntType (), IdnDef ("count"), Some (IntExpr (0))),
-                IterateOverStmt (
-                    IdnDef ("current"),
-                    Others (),
-                    IfStmt (
-                        NeighbourExpr (IdnUse ("current"), IdnUse ("alive")),
-                        AssignStmt (
-                            IdnExpr (IdnUse ("count")),
-                            PlusExpr (
-                                IdnExpr (IdnUse ("count")),
-                                IntExpr (1))),
-                        None)),
-                IfStmt (
-                    AndExpr (
-                        IdnExpr (IdnUse ("alive")),
-                        OrExpr (
-                            LessExpr (
-                                IdnExpr (IdnUse ("count")),
-                                IntExpr (2)),
-                            GreaterExpr (
-                                IdnExpr (IdnUse ("count")),
-                                IntExpr (3)))),
-                    AssignStmt (IdnExpr (IdnUse ("alive")), FalseExpr ()),
-                    None),
-                IfStmt (
-                    AndExpr (
-                        NotExpr (IdnExpr (IdnUse ("alive"))),
-                        EqualExpr (IdnExpr (IdnUse ("count")), IntExpr (3))),
-                    AssignStmt (IdnExpr (IdnUse ("alive")), TrueExpr ()),
-                    None))),
-        ConstantDecl (IntType (), IdnDef ("black"), IntExpr (0)),
-        ConstantDecl (IntType (), IdnDef ("white"), IntExpr (16777215)),
-        ColourMapperDecl (
-            Vector (
-                IfStmt (
-                    IdnExpr (IdnUse ("alive")),
-                    ReturnStmt (Some (IdnExpr (IdnUse ("white")))),
-                    Some (ReturnStmt (Some (IdnExpr (IdnUse ("black")))))))),
-        FunctionDecl (
-            IdnDef ("glider"),
-            Vector (
-                ParamDecl (IntType (), IdnDef ("row")),
-                ParamDecl (IntType (), IdnDef ("col"))),
-            None,
-            Vector (
-                CellStmt (
-                    CoordExpr (
-                        Vector (
-                            IdnExpr (IdnUse ("row")),
-                            IdnExpr (IdnUse ("col")))),
-                    IterateOverStmt (
-                        IdnDef ("nbr"),
-                        Subset (
-                            Vector (
-                                IdnExpr (IdnUse ("N")),
-                                IdnExpr (IdnUse ("E")),
-                                IdnExpr (IdnUse ("SW")),
-                                IdnExpr (IdnUse ("S")),
-                                IdnExpr (IdnUse ("SE")))),
-                        AssignStmt (
-                            NeighbourExpr (IdnUse ("nbr"), IdnUse ("alive")),
-                            TrueExpr ()))))),
-        InitialiserDecl (
-            IdnDef ("singleGlider"),
-            Vector (
-                FunCallStmt (
-                    FunCallExpr (
-                        IdnUse ("glider"),
-                        Vector (
-                            DivExpr (
-                                IdnExpr (IdnUse ("height")),
-                                IntExpr (2)),
-                            DivExpr (
-                                IdnExpr (IdnUse ("width")),
-                                IntExpr (2))))))),
-        InitialiserDecl (
-            IdnDef ("fourGliders"),
-            Vector (
-                FunCallStmt (
-                    FunCallExpr (
-                        IdnUse ("glider"),
-                        Vector (
-                            DivExpr (
-                                IdnExpr (IdnUse ("height")),
-                                IntExpr (4)),
-                            DivExpr (
-                                IdnExpr (IdnUse ("width")),
-                                IntExpr (4))))),
-                FunCallStmt (
-                    FunCallExpr (
-                        IdnUse ("glider"),
-                        Vector (
-                            DivExpr (
-                                MultExpr (
-                                    IntExpr (3),
-                                    IdnExpr (IdnUse ("height"))),
-                                IntExpr (4)),
-                            DivExpr (
-                                IdnExpr (IdnUse ("width")),
-                                IntExpr (4))))),
-                FunCallStmt (
-                    FunCallExpr (
-                        IdnUse ("glider"),
-                        Vector (
-                            DivExpr (
-                                IdnExpr (IdnUse ("height")),
-                                IntExpr (4)),
-                            DivExpr (
-                                MultExpr (
-                                    IntExpr (3),
-                                    IdnExpr (IdnUse ("width"))),
-                                IntExpr (4))))),
-                FunCallStmt (
-                    FunCallExpr (
-                        IdnUse ("glider"),
-                        Vector (
-                            DivExpr (
-                                MultExpr (
-                                    IntExpr (3),
-                                    IdnExpr (IdnUse ("height"))),
-                                IntExpr (4)),
-                            DivExpr (
-                                MultExpr (
-                                    IntExpr (3),
-                                    IdnExpr (IdnUse ("width"))),
-                                IntExpr (4)))))))))
+package org.bitbucket.dominicverity.cellsim;
 
+class CellularAutomaton extends BaseAutomaton {
+
+    private static final int width$5 = 200;
+    private static final int height$6 = 200;
+    private static final int black$18 = 0;
+    private static final int white$19 = 16777215;
+
+    class Cell extends BaseCell {
+
+        Cell _other$2;
+        Cell _theother$3;
+        Cell N$7;
+        Cell S$8;
+        Cell W$9;
+        Cell E$10;
+        Cell NE$11;
+        Cell SE$12;
+        Cell SW$13;
+        Cell NW$14;
+        boolean alive$15;
+
+        Cell(Point _loc$1) {
+            super(_loc$1);
+            _other$2 = this;
+            resetCellState();
+        }
+
+        void initNeighbours() {
+            _theother$3 = getOther();
+            N$7 = getCellRel(0, 1);
+            S$8 = getCellRel(0, -1);
+            W$9 = getCellRel(-1, 0);
+            E$10 = getCellRel(1, 0);
+            NE$11 = getCellRel(1, 1);
+            SE$12 = getCellRel(1, -1);
+            SW$13 = getCellRel(-1, -1);
+            NW$14 = getCellRel(-1, 1);
+        }
+
+        synchronized void updater() {
+            _other$2.alive$15 = alive$15;
+            int count$16 = 0;
+            {
+                Cell current$17;
+                current$17 = N$7;
+                if (current$17.alive$15)
+                    count$16 = count$16 + 1;
+                current$17 = S$8;
+                if (current$17.alive$15)
+                    count$16 = count$16 + 1;
+                current$17 = W$9;
+                if (current$17.alive$15)
+                    count$16 = count$16 + 1;
+                current$17 = E$10;
+                if (current$17.alive$15)
+                    count$16 = count$16 + 1;
+                current$17 = NE$11;
+                if (current$17.alive$15)
+                    count$16 = count$16 + 1;
+                current$17 = SE$12;
+                if (current$17.alive$15)
+                    count$16 = count$16 + 1;
+                current$17 = SW$13;
+                if (current$17.alive$15)
+                    count$16 = count$16 + 1;
+                current$17 = NW$14;
+                if (current$17.alive$15)
+                    count$16 = count$16 + 1;
+            }
+            if (alive$15 && (count$16 < 2 || count$16 > 3))
+                _other$2.alive$15 = false;
+            if (!alive$15 && count$16 == 3)
+                _other$2.alive$15 = true;
+        }
+
+        synchronized int mapper() {
+            if (alive$15)
+                return white$19;
+            else
+                return black$18;
+        }
+
+        synchronized void resetCellState() {
+            alive$15 = false;
+        }
+
+        Cell getCellRel(int... _off$4) {
+            return (Cell)getCell(_off$4);
+        }
+
+        Cell getOther() {
+            return (Cell)getNextGen();
+        }
+
+        void otherToSelf() {
+            _other$2 = this;
+        }
+
+        void otherToOther() {
+            _other$2 = _theother$3;
+        }
+    }
+
+    CellularAutomaton() {
+        super();
+        initDims(width$5, height$6);
+        initCycles(true, false);
+        initWorld();
+        addInitialiser("one_glider", (() -> { one_glider$21(); }));
+        addInitialiser("four_gliders", (() -> { four_gliders$22(); }));
+        addInitialiser("glider_gun", (() -> { glider_gun$23(); }));
+        addInitialiser("infinite_a", (() -> { infinite_a$24(); }));
+        addInitialiser("acorn", (() -> { acorn$25(); }));
+        addInitialiser("random", (() -> { random$26(); }));
+    }
+
+    private void glider$20(int row$27, int col$28) {
+        {
+            Cell _cell$29 = getCellAbs(row$27, col$28);
+            {
+                Cell nbr$30;
+                nbr$30 = _cell$29.N$7;
+                nbr$30._other$2.alive$15 = true;
+                nbr$30 = _cell$29.E$10;
+                nbr$30._other$2.alive$15 = true;
+                nbr$30 = _cell$29.SW$13;
+                nbr$30._other$2.alive$15 = true;
+                nbr$30 = _cell$29.S$8;
+                nbr$30._other$2.alive$15 = true;
+                nbr$30 = _cell$29.SE$12;
+                nbr$30._other$2.alive$15 = true;
+            }
+        }
+    }
+
+    void one_glider$21() {
+        glider$20(height$6 / 2, width$5 / 2);
+    }
+
+    void four_gliders$22() {
+        glider$20(height$6 / 4, width$5 / 4);
+        glider$20(3 * height$6 / 4, width$5 / 4);
+        glider$20(height$6 / 4, 3 * width$5 / 4);
+        glider$20(3 * height$6 / 4, 3 * width$5 / 4);
+    }
+
+    void glider_gun$23() {
+        {
+            Cell _cell$31 = getCellAbs(100, 124);
+            _cell$31._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$32 = getCellAbs(101, 122);
+            _cell$32._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$33 = getCellAbs(101, 124);
+            _cell$33._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$34 = getCellAbs(102, 112);
+            _cell$34._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$35 = getCellAbs(102, 113);
+            _cell$35._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$36 = getCellAbs(102, 120);
+            _cell$36._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$37 = getCellAbs(102, 121);
+            _cell$37._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$38 = getCellAbs(102, 134);
+            _cell$38._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$39 = getCellAbs(102, 135);
+            _cell$39._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$40 = getCellAbs(103, 111);
+            _cell$40._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$41 = getCellAbs(103, 115);
+            _cell$41._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$42 = getCellAbs(103, 120);
+            _cell$42._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$43 = getCellAbs(103, 121);
+            _cell$43._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$44 = getCellAbs(103, 134);
+            _cell$44._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$45 = getCellAbs(103, 135);
+            _cell$45._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$46 = getCellAbs(104, 100);
+            _cell$46._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$47 = getCellAbs(104, 101);
+            _cell$47._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$48 = getCellAbs(104, 110);
+            _cell$48._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$49 = getCellAbs(104, 116);
+            _cell$49._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$50 = getCellAbs(104, 120);
+            _cell$50._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$51 = getCellAbs(104, 121);
+            _cell$51._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$52 = getCellAbs(105, 100);
+            _cell$52._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$53 = getCellAbs(105, 101);
+            _cell$53._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$54 = getCellAbs(105, 110);
+            _cell$54._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$55 = getCellAbs(105, 114);
+            _cell$55._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$56 = getCellAbs(105, 116);
+            _cell$56._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$57 = getCellAbs(105, 117);
+            _cell$57._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$58 = getCellAbs(105, 122);
+            _cell$58._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$59 = getCellAbs(105, 124);
+            _cell$59._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$60 = getCellAbs(106, 110);
+            _cell$60._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$61 = getCellAbs(106, 116);
+            _cell$61._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$62 = getCellAbs(106, 124);
+            _cell$62._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$63 = getCellAbs(107, 111);
+            _cell$63._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$64 = getCellAbs(107, 115);
+            _cell$64._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$65 = getCellAbs(108, 112);
+            _cell$65._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$66 = getCellAbs(108, 113);
+            _cell$66._other$2.alive$15 = true;
+        }
+    }
+
+    void infinite_a$24() {
+        {
+            Cell _cell$67 = getCellAbs(100, 106);
+            _cell$67._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$68 = getCellAbs(101, 104);
+            _cell$68._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$69 = getCellAbs(101, 106);
+            _cell$69._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$70 = getCellAbs(101, 107);
+            _cell$70._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$71 = getCellAbs(102, 104);
+            _cell$71._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$72 = getCellAbs(102, 106);
+            _cell$72._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$73 = getCellAbs(103, 104);
+            _cell$73._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$74 = getCellAbs(104, 102);
+            _cell$74._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$75 = getCellAbs(105, 100);
+            _cell$75._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$76 = getCellAbs(105, 102);
+            _cell$76._other$2.alive$15 = true;
+        }
+    }
+
+    void acorn$25() {
+        {
+            Cell _cell$77 = getCellAbs(100, 101);
+            _cell$77._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$78 = getCellAbs(101, 103);
+            _cell$78._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$79 = getCellAbs(102, 100);
+            _cell$79._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$80 = getCellAbs(102, 101);
+            _cell$80._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$81 = getCellAbs(102, 104);
+            _cell$81._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$82 = getCellAbs(102, 105);
+            _cell$82._other$2.alive$15 = true;
+        }
+        {
+            Cell _cell$83 = getCellAbs(102, 106);
+            _cell$83._other$2.alive$15 = true;
+        }
+    }
+
+    void random$26() {
+        {
+            int i$84 = 0;
+            int _end$86 = width$5 - 1;
+            int _step$87 = 1;
+            boolean _dirn$85 = _step$87 >= 0;
+            if (_step$87 != 0)
+                while (_dirn$85 && _end$86 >= i$84 || (!_dirn$85 && _end$86 <= i$84)) {
+                    {
+                        {
+                            int j$88 = 0;
+                            int _end$90 = height$6 - 1;
+                            int _step$91 = 1;
+                            boolean _dirn$89 = _step$91 >= 0;
+                            if (_step$91 != 0)
+                                while (_dirn$89 && _end$90 >= j$88 || (!_dirn$89 && _end$90 <= j$88)) {
+                                    {
+                                        {
+                                            Cell _cell$92 = getCellAbs(i$84, j$88);
+                                            {
+                                                if (_rnd(2) == 1)
+                                                    _cell$92._other$2.alive$15 = true;
+                                                else
+                                                    _cell$92._other$2.alive$15 = false;
+                                            }
+                                        }
+                                    }
+                                    j$88 = j$88 + _step$91;
+                                }
+                        }
+                    }
+                    i$84 = i$84 + _step$87;
+                }
+        }
+    }
+
+    BaseCell makeCell(Point _loc$1) {
+        return new Cell(_loc$1);
+    }
+
+    Cell getCellAbs(int... _loc$1) {
+        return (Cell)getCell(_loc$1);
+    }
+}

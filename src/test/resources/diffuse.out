@@ -1,0 +1,210 @@
+package org.bitbucket.dominicverity.cellsim;
+
+class CellularAutomaton extends BaseAutomaton {
+
+    private static final int width$5 = 200;
+    private static final int height$6 = 200;
+    private static final double diff_rate$7 = 0.16;
+    private static final int black$15 = 0;
+    private static final int dimgrey$16 = 6908265;
+    private static final int grey$17 = 8421504;
+    private static final int darkgrey$18 = 11119017;
+    private static final int silver$19 = 12632256;
+    private static final int lightgrey$20 = 13882323;
+    private static final int gainsboro$21 = 14474460;
+    private static final int white$22 = 16777215;
+    private static final double band_size$23 = 1.0 / 128;
+    private static final double band_7$24 = band_size$23 * 127;
+    private static final double band_6$25 = band_size$23 * 63;
+    private static final double band_5$26 = band_size$23 * 31;
+    private static final double band_4$27 = band_size$23 * 15;
+    private static final double band_3$28 = band_size$23 * 7;
+    private static final double band_2$29 = band_size$23 * 3;
+    private static final double band_1$30 = band_size$23 * 1;
+
+    class Cell extends BaseCell {
+
+        Cell _other$2;
+        Cell _theother$3;
+        Cell N$8;
+        Cell S$9;
+        Cell W$10;
+        Cell E$11;
+        double concentration$12;
+
+        Cell(Point _loc$1) {
+            super(_loc$1);
+            _other$2 = this;
+            resetCellState();
+        }
+
+        void initNeighbours() {
+            _theother$3 = getOther();
+            N$8 = getCellRel(0, 1);
+            S$9 = getCellRel(0, -1);
+            W$10 = getCellRel(-1, 0);
+            E$11 = getCellRel(1, 0);
+        }
+
+        synchronized void updater() {
+            _other$2.concentration$12 = concentration$12;
+            double gradient$13 = 0;
+            {
+                Cell cell$14;
+                cell$14 = N$8;
+                gradient$13 = gradient$13 + (cell$14.concentration$12 - concentration$12);
+                cell$14 = S$9;
+                gradient$13 = gradient$13 + (cell$14.concentration$12 - concentration$12);
+                cell$14 = W$10;
+                gradient$13 = gradient$13 + (cell$14.concentration$12 - concentration$12);
+                cell$14 = E$11;
+                gradient$13 = gradient$13 + (cell$14.concentration$12 - concentration$12);
+            }
+            _other$2.concentration$12 = concentration$12 + gradient$13 * diff_rate$7;
+        }
+
+        synchronized int mapper() {
+            if (concentration$12 <= band_4$27) {
+                if (concentration$12 <= band_2$29) {
+                    if (concentration$12 <= band_1$30)
+                        return black$15;
+                    else
+                        return dimgrey$16;
+                }
+                else {
+                    if (concentration$12 <= band_3$28)
+                        return grey$17;
+                    else
+                        return darkgrey$18;
+                }
+            }
+            else {
+                if (concentration$12 <= band_6$25) {
+                    if (concentration$12 <= band_5$26)
+                        return silver$19;
+                    else
+                        return lightgrey$20;
+                }
+                else {
+                    if (concentration$12 <= band_7$24)
+                        return gainsboro$21;
+                    else
+                        return white$22;
+                }
+            }
+        }
+
+        synchronized void resetCellState() {
+            concentration$12 = 0.0;
+        }
+
+        Cell getCellRel(int... _off$4) {
+            return (Cell)getCell(_off$4);
+        }
+
+        Cell getOther() {
+            return (Cell)getNextGen();
+        }
+
+        void otherToSelf() {
+            _other$2 = this;
+        }
+
+        void otherToOther() {
+            _other$2 = _theother$3;
+        }
+    }
+
+    CellularAutomaton() {
+        super();
+        initDims(width$5, height$6);
+        initCycles(true, true);
+        initWorld();
+        addInitialiser("blob", (() -> { blob$32(); }));
+        addInitialiser("random_blobs", (() -> { random_blobs$33(); }));
+        addInitialiser("random_field", (() -> { random_field$34(); }));
+    }
+
+    private void drop_blob$31(int x$35, int y$36, int w$37) {
+        {
+            int i$38 = x$35 - w$37;
+            int _end$40 = x$35 + w$37;
+            int _step$41 = 1;
+            boolean _dirn$39 = _step$41 >= 0;
+            if (_step$41 != 0)
+                while (_dirn$39 && _end$40 >= i$38 || (!_dirn$39 && _end$40 <= i$38)) {
+                    {
+                        int j$42 = y$36 - w$37;
+                        int _end$44 = y$36 + w$37;
+                        int _step$45 = 1;
+                        boolean _dirn$43 = _step$45 >= 0;
+                        if (_step$45 != 0)
+                            while (_dirn$43 && _end$44 >= j$42 || (!_dirn$43 && _end$44 <= j$42)) {
+                                {
+                                    Cell _cell$46 = getCellAbs(i$38, j$42);
+                                    _cell$46._other$2.concentration$12 = 1;
+                                }
+                                j$42 = j$42 + _step$45;
+                            }
+                    }
+                    i$38 = i$38 + _step$41;
+                }
+        }
+    }
+
+    void blob$32() {
+        drop_blob$31(width$5 / 2, height$6 / 2, 20);
+    }
+
+    void random_blobs$33() {
+        {
+            int count$47 = 1;
+            int _end$49 = 6;
+            int _step$50 = 1;
+            boolean _dirn$48 = _step$50 >= 0;
+            if (_step$50 != 0)
+                while (_dirn$48 && _end$49 >= count$47 || (!_dirn$48 && _end$49 <= count$47)) {
+                    drop_blob$31(_rnd(width$5), _rnd(height$6), 10);
+                    count$47 = count$47 + _step$50;
+                }
+        }
+    }
+
+    void random_field$34() {
+        {
+            int i$51 = 0;
+            int _end$53 = width$5 - 1;
+            int _step$54 = 1;
+            boolean _dirn$52 = _step$54 >= 0;
+            if (_step$54 != 0)
+                while (_dirn$52 && _end$53 >= i$51 || (!_dirn$52 && _end$53 <= i$51)) {
+                    {
+                        int j$55 = 0;
+                        int _end$57 = height$6 - 1;
+                        int _step$58 = 1;
+                        boolean _dirn$56 = _step$58 >= 0;
+                        if (_step$58 != 0)
+                            while (_dirn$56 && _end$57 >= j$55 || (!_dirn$56 && _end$57 <= j$55)) {
+                                {
+                                    Cell _cell$59 = getCellAbs(i$51, j$55);
+                                    if (_rnd(50) == 0)
+                                        _cell$59._other$2.concentration$12 = 1;
+                                    else
+                                        _cell$59._other$2.concentration$12 = 0;
+                                }
+                                j$55 = j$55 + _step$58;
+                            }
+                    }
+                    i$51 = i$51 + _step$54;
+                }
+        }
+    }
+
+    BaseCell makeCell(Point _loc$1) {
+        return new Cell(_loc$1);
+    }
+
+    Cell getCellAbs(int... _loc$1) {
+        return (Cell)getCell(_loc$1);
+    }
+}

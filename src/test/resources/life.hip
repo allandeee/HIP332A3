@@ -11,8 +11,8 @@
 // Constant declarations giving the size of the automaton.
 // All variable declarations at top level are assumed constant.
 
-int width = 100;
-int height = 100;
+int width = 200;
+int height = 200;
 
 // Declare the dimensions of the automaton.
 // The `cyclic` suffix specifies that a dimension should
@@ -112,15 +112,98 @@ function glider(int row, int col) {
 
 // This initialiser places a single glider in the centre of the grid.
 
-initialiser singleGlider {
+initialiser one_glider {
   glider(height / 2, width / 2);
 }
 
 // This initialiser places 4 gliders at various equidistant points.
 
-initialiser fourGliders {
+initialiser four_gliders {
   glider(height / 4, width / 4);
   glider(3 * height / 4, width / 4);
   glider(height / 4, 3 * width / 4);
   glider(3 * height / 4, 3 * width / 4);
+}
+
+// This initialiser constructs Gosper's glider gun.
+
+initialiser glider_gun {
+  cell [100, 124] alive = true;
+  cell [101, 122] alive = true;
+  cell [101, 124] alive = true;
+  cell [102, 112] alive = true;
+  cell [102, 113] alive = true;
+  cell [102, 120] alive = true;
+  cell [102, 121] alive = true;
+  cell [102, 134] alive = true;
+  cell [102, 135] alive = true;
+  cell [103, 111] alive = true;
+  cell [103, 115] alive = true;
+  cell [103, 120] alive = true;
+  cell [103, 121] alive = true;
+  cell [103, 134] alive = true;
+  cell [103, 135] alive = true;
+  cell [104, 100] alive = true;
+  cell [104, 101] alive = true;
+  cell [104, 110] alive = true;
+  cell [104, 116] alive = true;
+  cell [104, 120] alive = true;
+  cell [104, 121] alive = true;
+  cell [105, 100] alive = true;
+  cell [105, 101] alive = true;
+  cell [105, 110] alive = true;
+  cell [105, 114] alive = true;
+  cell [105, 116] alive = true;
+  cell [105, 117] alive = true;
+  cell [105, 122] alive = true;
+  cell [105, 124] alive = true;
+  cell [106, 110] alive = true;
+  cell [106, 116] alive = true;
+  cell [106, 124] alive = true;
+  cell [107, 111] alive = true;
+  cell [107, 115] alive = true;
+  cell [108, 112] alive = true;
+  cell [108, 113] alive = true;
+}
+
+// A minimal pattern giving infinite growth.
+
+initialiser infinite_a {
+  cell [100, 106] alive = true;
+  cell [101, 104] alive = true;
+  cell [101, 106] alive = true;
+  cell [101, 107] alive = true;
+  cell [102, 104] alive = true;
+  cell [102, 106] alive = true;
+  cell [103, 104] alive = true;
+  cell [104, 102] alive = true;
+  cell [105, 100] alive = true;
+  cell [105, 102] alive = true;
+}
+
+// The acorn.
+
+initialiser acorn {
+  cell [100, 101] alive = true;
+  cell [101, 103] alive = true;
+  cell [102, 100] alive = true;
+  cell [102, 101] alive = true;
+  cell [102, 104] alive = true;
+  cell [102, 105] alive = true;
+  cell [102, 106] alive = true;
+}
+
+// A random initialiser.
+
+initialiser random {
+  for i = 0 to (width-1) {
+    for j = 0 to (height-1) {
+      cell [i, j] {
+        if (rnd(2) == 1) then
+          alive = true;
+        else
+          alive = false;
+      }
+    }
+  }
 }

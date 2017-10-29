@@ -1,0 +1,132 @@
+package org.bitbucket.dominicverity.cellsim;
+
+class CellularAutomaton extends BaseAutomaton {
+
+    private static final int width$5 = 402;
+    private static final int height$6 = 200;
+    private static final boolean a0$7 = false;
+    private static final boolean a1$8 = true;
+    private static final boolean a2$9 = false;
+    private static final boolean a3$10 = true;
+    private static final boolean a4$11 = true;
+    private static final boolean a5$12 = false;
+    private static final boolean a6$13 = true;
+    private static final boolean a7$14 = false;
+    private static final int white$19 = 16777215;
+    private static final int cyan$20 = 65535;
+
+    class Cell extends BaseCell {
+
+        Cell _other$2;
+        Cell _theother$3;
+        Cell L$15;
+        Cell C$16;
+        Cell R$17;
+        boolean alive$18;
+
+        Cell(Point _loc$1) {
+            super(_loc$1);
+            _other$2 = this;
+            resetCellState();
+        }
+
+        void initNeighbours() {
+            _theother$3 = getOther();
+            L$15 = getCellRel(-1, 1);
+            C$16 = getCellRel(0, 1);
+            R$17 = getCellRel(1, 1);
+        }
+
+        synchronized void updater() {
+            _other$2.alive$18 = alive$18;
+            if (L$15.alive$18) {
+                if (C$16.alive$18) {
+                    if (R$17.alive$18) {
+                        _other$2.alive$18 = a7$14;
+                    }
+                    else {
+                        _other$2.alive$18 = a6$13;
+                    }
+                }
+                else {
+                    if (R$17.alive$18) {
+                        _other$2.alive$18 = a5$12;
+                    }
+                    else {
+                        _other$2.alive$18 = a4$11;
+                    }
+                }
+            }
+            else {
+                if (C$16.alive$18) {
+                    if (R$17.alive$18) {
+                        _other$2.alive$18 = a3$10;
+                    }
+                    else {
+                        _other$2.alive$18 = a2$9;
+                    }
+                }
+                else {
+                    if (R$17.alive$18) {
+                        _other$2.alive$18 = a1$8;
+                    }
+                    else {
+                        _other$2.alive$18 = a0$7;
+                    }
+                }
+            }
+        }
+
+        synchronized int mapper() {
+            if (alive$18)
+                return cyan$20;
+            else
+                return white$19;
+        }
+
+        synchronized void resetCellState() {
+            alive$18 = false;
+        }
+
+        Cell getCellRel(int... _off$4) {
+            return (Cell)getCell(_off$4);
+        }
+
+        Cell getOther() {
+            return (Cell)getNextGen();
+        }
+
+        void otherToSelf() {
+            _other$2 = this;
+        }
+
+        void otherToOther() {
+            _other$2 = _theother$3;
+        }
+    }
+
+    CellularAutomaton() {
+        super();
+        initDims(width$5 + 1, height$6 + 1);
+        initCycles(false, false);
+        initWorld();
+        addInitialiser("select_me", (() -> { select_me$21(); }));
+    }
+
+    void select_me$21() {
+        {
+            Cell _cell$22 = getCellAbs(width$5 / 2, height$6);
+            {
+                _cell$22.C$16._other$2.alive$18 = true;
+            }
+        }
+    }
+
+    BaseCell makeCell(Point _loc$1) {
+        return new Cell(_loc$1);
+    }
+
+    Cell getCellAbs(int... _loc$1) {
+        return (Cell)getCell(_loc$1);
+    }
+}

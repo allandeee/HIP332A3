@@ -11,12 +11,10 @@
 
 package compiler
 
-import org.bitbucket.inkytonik.kiama.attribution.Attribution
-
 /**
   * Attribute definitions of the Hipster type checker.
   */
-trait TypeAnalysis extends Attribution {
+trait TypeAnalysis extends AttributionUtils {
 
   self : NameAnalysis =>
 
@@ -119,8 +117,84 @@ trait TypeAnalysis extends Attribution {
       case _ : FloatExpr => FloatType()
       case _ : BoolExpr => BoolType()
 
-      // FIXME: Add type inference cases for all other expression
-      // node types here.
+      case NeighbourExpr(_,i) =>
+        entity(i) match {
+          case StateField(t, _) => t
+          case _ => UnknownType()
+        }
+
+      case FunCallExpr(i,_) =>
+        entity(i) match {
+          case e : Applicable => e.tipe
+          case _ => UnknownType()
+        }
+
+      case m : ArithmeticOp =>
+        m match {
+          case n : BinaryExpression =>
+            tipe(n.left) match {
+              case IntType() =>
+                tipe(n.right) match {
+                  case t @ (IntType() | FloatType()) => t
+                  case _ => UnknownType()
+                }
+              case FloatType() =>
+                tipe(n.right) match {
+                  case (IntType() | FloatType()) => FloatType()
+                  case _ => UnknownType()
+                }
+              case _ => UnknownType()
+            }
+          case n : UnaryExpression =>
+            tipe(n.exp) match {
+              case t @ (IntType() | FloatType()) => t
+              case _ => UnknownType();
+            }
+          case _ => UnknownType()
+        }
+
+      case m : BooleanOp =>
+        m match {
+          case n : BinaryExpression =>
+            tipe(n.left) match {
+              case BoolType() =>
+                tipe(n.right) match {
+                  case BoolType() => BoolType()
+                  case _ => UnknownType()
+                }
+              case _ => UnknownType()
+            }
+          case n : UnaryExpression =>
+            tipe(n.exp) match {
+              case BoolType() => BoolType()
+              case _ => UnknownType()
+            }
+          case _ => UnknownType()
+        }
+
+      case m : RelationalOp =>
+        m match {
+          case n : BinaryExpression =>
+            tipe(n.left) match {
+              case (IntType() | FloatType()) =>
+                tipe(n.right) match {
+                  case (IntType() | FloatType()) => BoolType()
+                  case _ => UnknownType()
+                }
+              case BoolType() =>
+                tipe(n.right) match {
+                  case BoolType() => BoolType()
+                  case _ => UnknownType()
+                }
+              case NeighbourType() if n.isInstanceOf[EqualExpr] =>
+                tipe(n.right) match {
+                  case NeighbourType() => BoolType()
+                  case _ => UnknownType()
+                }
+              case _ => UnknownType()
+            }
+          case _ => UnknownType()
+        }
 
       // We shouldn't get here, but if all else fails report that the type
       // of this expression is `unknown`.
@@ -145,56 +219,98 @@ trait TypeAnalysis extends Attribution {
       case tree.parent.pair(n, VarDecl(t,_,_)) =>
         compatTypes(t)
 
-      // FIXME: Add cases to compute the set of expected types for an
-      // expression node by inspecting the type of its parent.
-
-      // Assignment statement. The lvalue can have any non-void type
+      // Assignment statement. The lvalue can have any type
       // and the rvalue must have a type compatible with the type of
       // the lvalue.
+      case tree.parent.pair(n, AssignStmt(l,e)) =>
+        if (n eq l)
+          Set(FloatType(), IntType(), NeighbourType(), BoolType())
+        else
+          compatTypes(tipe(l))
 
       // If statement. The control expression must be of type `bool`.
+      case tree.parent.pair(n, IfStmt(e, _, _))
+          if (n eq e) => Set(BoolType())
 
       // For statement, The from, to and step expressions must all be
       // of type `int`.
+      case tree.parent(_ : ForStmt) => Set(IntType())
 
       // Function call statement. The return type of a function called
       // as a statement can be any of the builtin types. Any returned
       // value is discarded.
+      case tree.parent(_ : FunCallStmt) => Set(
+        FloatType(), IntType(), NeighbourType(), BoolType())
 
-      // Return statement. The return expression type must be compatible
-      // with the return type of the enclosing function or colour
-      // mapper.
+      // Return statement. The return expression type is compatible with
+      // the return type of the enclosing function, updater, colour
+      // mapper or initiliser.
+      case tree.parent(p : ReturnStmt) => compatTypes(returnTipe(p))
 
-      // Arithmetic operations expect their arguments to be of integer,
-      // floating point or boolean type.
+      // Arithmetic operations expect their arguments to be of integer or
+      // floating point type.
+      case tree.parent(_ : ArithmeticOp) => Set(IntType(),FloatType())
 
       // Boolean operations expect arguments of boolean type.
+      case tree.parent(_ : BooleanOp) => Set(BoolType())
 
       // An equals expression can compare integers, floats, booleans
       // and neighbours...
+      case tree.parent.pair(n, EqualExpr(l, _)) if n eq l =>
+        Set(IntType(), FloatType(), BoolType(), NeighbourType())
 
-      // ...and the type of the right hand argument of an equals must be
-      // compatible with that of its left hand argument...
+      // ... and the type of its right hand argument must be compatible
+      // with that of its left hand argument...
+      case tree.parent.pair(n, EqualExpr(l, r)) if n eq r =>
+        tipe(l) match {
+          case IntType() | FloatType() => Set(IntType(), FloatType())
+          case BoolType() => Set(BoolType())
+          case NeighbourType() => Set(NeighbourType())
+          case _ =>
+            Set(IntType(), FloatType(), BoolType(), NeighbourType())
+        }
 
       // ... any other relational expression can only compare integers
-      // and floats.
+      // floats, and booleans.
+      case tree.parent.pair(n, p : BinaryExpression)
+          if p.isInstanceOf[RelationalOp] && (n eq p.left) =>
+        Set(IntType(), FloatType(), BoolType())
 
+      // ... and if the type of the left hand argument is correct then
+      // its right hand argument must have type that is compatible with it.
+      case tree.parent.pair(n, p : BinaryExpression)
+          if p.isInstanceOf[RelationalOp] && (n eq p.right) =>
+        tipe(p.left) match {
+          case IntType() | FloatType() => Set(IntType(), FloatType())
+          case BoolType() => Set(BoolType())
+          case _ =>
+            Set(IntType(), FloatType(), BoolType(), NeighbourType())
+        }
+ 
       // The expected types of the arguments in a function call should
       // be compatible with the declared types, which are distributed
       // through the `paramTipe` attribute. If there are more arguments
       // than parameters the extra arguments can have any type compatible
       // with `unknown`.
+      case tree.parent.pair(n : Expression, _ : FunCallExpr) =>
+        compatTypes(
+          paramTipe(n) match {
+            case Vector(t,_*) => t
+            case _ => UnknownType()
+          })
 
       // A neighbour state field expression expects its left operand
       // to be of `neighbour` type.
+      case tree.parent(_ : NeighbourExpr) => Set(NeighbourType())
 
       // A coordinate expression expects its ordinates to be integers.
+      case tree.parent(_ : CoordExpr) => Set(IntType())
 
       // A subset clause in an `iterate...over` statement must have
       // entries of `neighbour` type.
+      case tree.parent(_ : Subset) => Set(NeighbourType())
 
-      // We shouldn't get here, but just in case the default is compatible
-      // with the computed expression type.
+      // Default is the computed expression type.
       case n => compatTypes(tipe(n))
     }
 
@@ -257,13 +373,13 @@ object TypeAnalysis {
   /**
     * Returns the set of types compatible with a given type.
     */
-  def compatTypes(t : Type) : Set[Type] =
-    t match {
+  def compatTypes(pt : Type) : Set[Type] =
+    pt match {
       case FloatType() => Set(IntType(), FloatType())
       case UnknownType() =>
         Set(IntType(), FloatType(), NeighbourType(),
           BoolType())
-      case _ => Set(t)
+      case t => Set(t)
     }
 
 }

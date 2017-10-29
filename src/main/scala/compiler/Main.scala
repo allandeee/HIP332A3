@@ -11,8 +11,10 @@
 
 package compiler
 
-import org.bitbucket.inkytonik.kiama.util.Messaging
-import org.bitbucket.inkytonik.kiama.util.PositionStore
+import org.bitbucket.inkytonik.kiama._
+
+import util.Messaging
+import util.PositionStore
 
 /**
  * Syntax analyse the expression language program in the file given as the
@@ -21,13 +23,14 @@ import org.bitbucket.inkytonik.kiama.util.PositionStore
 object Main extends PositionStore with Messaging {
 
   import HipsterTree._
-  import SymbolTable._
+  // import SymbolTable.{format => formatEnv}
+  import PrettyPrinter.{format => formatJava}
 
   import java.io.FileNotFoundException
-  import org.bitbucket.inkytonik.kiama.output.PrettyPrinter.{any, layout}
-  import org.bitbucket.inkytonik.kiama.parsing.{NoSuccess, Success}
-  import org.bitbucket.inkytonik.kiama.util.Messaging.message
-  import org.bitbucket.inkytonik.kiama.util.FileSource
+  // import output.PrettyPrinter.{any, layout}
+  import parsing.{NoSuccess, Success}
+  import util.Messaging.message
+  import util.FileSource
 
   def main (args : Array[String]) : Unit = {
 
@@ -48,20 +51,27 @@ object Main extends PositionStore with Messaging {
             case Success (sourcetree, _) =>
 
               // Pretty print the source tree
-              println("\nProgram tree:\n-------------\n")
-              println(layout(any(sourcetree)))
+              // println("\nProgram tree:\n-------------\n")
+              // println(layout(any(sourcetree)))
 
               // Attribute the returned tree with semantic information.
               val tree = new HipsterTree(sourcetree)
               val analysis = new SemanticAnalysis(tree)
 
               // Pretty print final environment.
-              println("\nEnvironment out:\n----------------\n")
-              println(format(analysis.envout(sourcetree)))
+              // println("\nEnvironment out:\n----------------\n")
+              // println(formatEnv(analysis.envout(sourcetree)))
 
               // Report any errors.
               if (analysis.errors.length > 0)
                 report(analysis.errors)
+              else {
+                // Finally translate program and print it.
+                val target = new Translator(tree)
+                // println("\nTarget code:\n-----------\n")
+                println("package org.bitbucket.dominicverity.cellsim;")
+                println (formatJava(target.translated))
+              }
 
             // Parsing failed, so report it
             case res : NoSuccess =>

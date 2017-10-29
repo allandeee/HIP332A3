@@ -140,6 +140,34 @@ class TypeAnalysisTests extends SemanticTests {
     assert(messages.length === 0, "expecting no errors")
   }
 
+  test("check type compatibility between lvalue and rvalue of an assignment") {
+    val messages =
+      semanticTestInline ("""
+                |dimension (100,100);
+                |neighbourhood N = [0,1];
+                |state {}
+                |updater { 
+                |  float a; int b; neighbour c; boolean d;
+                |  a = 10; a = 10.3; a = true; a = me;
+                |  b = 10; b = 10.3; b = true; b = me;
+                |  c = 10; c = 10.3; c = true; c = me;
+                |  d = 10; d = 10.3; d = true; d = me; }
+                |mapper { return(0); }
+                """.stripMargin)
+    assert(messages.length === 11, "expecting eleven errors")
+    assertMessage(messages, 0, 7, 25, "type error, expecting 'int' or 'float' found 'boolean'")
+    assertMessage(messages, 1, 7, 35, "type error, expecting 'int' or 'float' found 'neighbour'")
+    assertMessage(messages, 2, 8, 15, "type error, expecting 'int' found 'float'")
+    assertMessage(messages, 3, 8, 25, "type error, expecting 'int' found 'boolean'")
+    assertMessage(messages, 4, 8, 35, "type error, expecting 'int' found 'neighbour'")
+    assertMessage(messages, 5, 9, 7, "type error, expecting 'neighbour' found 'int'")
+    assertMessage(messages, 6, 9, 15, "type error, expecting 'neighbour' found 'float'")
+    assertMessage(messages, 7, 9, 25, "type error, expecting 'neighbour' found 'boolean'")
+    assertMessage(messages, 8, 10, 7, "type error, expecting 'boolean' found 'int'")
+    assertMessage(messages, 9, 10, 15, "type error, expecting 'boolean' found 'float'")
+    assertMessage(messages, 10, 10, 35, "type error, expecting 'boolean' found 'neighbour'")
+  }
+
   test("check that a type error in an rvalue expression doesn't also trigger an assignment type error") {
     val messages =
       semanticTestInline ("""
@@ -329,28 +357,6 @@ class TypeAnalysisTests extends SemanticTests {
                 """.stripMargin)
     assert(messages.length === 0, "expecting no errors")
   }
-
-  // FIXME Add your tests here.
-
-  // BEWARE the tests of correct type checking above actually pass
-  // even when run against the framework compiler. This is a bit of a
-  // surprise because the framework compiler really does no type checking
-  // at all!
-
-  // This happens largely because the existing cases in the `tipe` attribute
-  // give most expresions the type `unknown`. Remeber, however, that we
-  // reduce the continual re-reporting of type errors by not reporting them
-  // for any expression whose inferred type is `unknown`.
-
-  // So on their own these particular tests really aren't much of a test
-  // of the effectiveness of the Hipster type checker. They only pick up
-  // situations in which the type system incorrectly reports a type error
-  // for an expression which should be type correct.
-
-  // What about the other side of the coin? You should strongly consider
-  // writing a bunch of tests to also make sure that your type checking
-  // does pick up and correctly report the various kinds of type error that
-  // can occur in an expression.
 
 }
 
