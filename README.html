@@ -11,13 +11,13 @@
 
 <body>
 
-<h1>Macquarie University, Department of Computing</h1>
+<h1>Macquarie University, Department of Computing </h1>
 
-<h2>COMP332 Programming Languages 2017</h2>
+<h2>COMP332 Programming Languages 2017 </h2>
 
-<h2>Hipster: a programming language for specifying cellular automata</h2>
+<h2>Hipster: a programming language for specifying cellular automata </h2>
 
-<h3>Introduction</h3>
+<h3>Introduction </h3>
 
 <p>A <em><a href="https://en.wikipedia.org/wiki/Cellular_automaton">cellular automaton</a></em> consists of a regular (finite or infinite) grid of cells laid out as a multi- (often 2-) dimensional array. Each cell can contain one of a finite number of different values, such as <code>off</code> and <code>on</code> or the numbers from <code>0</code> to <code>15</code> for example. Furthermore, each cell is surrounded by a finite set of cells, called its <em>neighbourhood</em>, defined relative to (and including) that cell.</p>
 
@@ -27,9 +27,9 @@
 
 <p>In recent years cellular automata have been used to model a wide variety of important physical and biological phenomena. Some physicists, including Nobel prize winner <a href="https://en.wikipedia.org/wiki/Gerard_%27t_Hooft">Gerard 't Hooft</a>, have proposed that cellular automata may provide a foundation for a unified theory of quantum mechanics and gravitation. Others have even suggested that the universe itself may be a gigantic cellular automaton. ;)</p>
 
-<h3>The Game of Life</h3>
+<h3>The Game of Life </h3>
 
-<p><img src="Neighbourhoods.jpg" alt="The Moore and von Neumann neighbourhoods" style="width: 30pc; float: right; display: inline;"/></p>
+<img src="Neighbourhoods.jpg" alt="The Moore and von Neumann neighbourhoods" style="width: 30pc; float: right; display: inline;"/>
 
 <p><a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Conway's game of life</a> is by far the most well-known and well-studied cellular automaton. It is &quot;played&quot; on a (potentially infinite) 2-dimensional square grid, and each of its cells can be in one of two states <code>alive</code> or <code>dead</code>. Whether a cell is alive in generation <code>t+1</code> depends on the number of cells that are alive in its <em>Moore neighbourhood</em> in generation <code>t</code>.</p>
 
@@ -44,17 +44,17 @@
 
 <p>The remarkable thing is that these very simple rules actually give rise to surprisingly complex behaviour. Part of the <em>game</em> in the game of life is to setup a starting configuration of live cells and then see how it evolves across the generations. Many configurations die out in a couple of generations, others fall into a stable and repeating configuration of patterns, and yet others grow without bounds or grow to a large size and then die off slowly. It is this property of <em>emergent complexity</em> from simple rules that has made cellular automata a popular pass-time and tool in sciences, like biology, where complexity abounds.</p>
 
-<p>You can find many game of life simulators online, and we encourage you to explore the world of cellular automata by spending a few minutes playing with one of these. One such was used as an exercise in Java programming in COMP229 half a decade ago, and you can access the simple simulator that arose from that work at <a href="https://bitbucket.org/dominicverity/gameoflife">Dom's GoL simulator</a>. </p>
+<p>You can find many game of life simulators online, and we encourage you to explore the world of cellular automata by spending a few minutes playing with one of these. One such was used as an exercise in Java programming in COMP229 half a decade ago, and you can access the simple simulator that arose from that work at <a href="https://bitbucket.org/dominicverity/gameoflife">Dom's GoL simulator</a>.</p>
 
-<h3>Turing patterns</h3>
+<h3>Turing patterns </h3>
 
-<p>A nice example of a cellular automaton used to demonstrate a biological model is one designed to demonstrate the emergence of <a href="https://www.wired.com/2011/02/turing-patterns/">Turing patterns</a>. Here again simple rules lead to complex behaviour. In this case simple interactions between two chemicals, called <em>activator</em> and <em>inhibitor</em>, give rise to complex patterns in the organisation of cells, colours on the skins of animals, and maybe even in the structure of galaxies. </p>
+<p>A nice example of a cellular automaton used to demonstrate a biological model is one designed to demonstrate the emergence of <a href="https://www.wired.com/2011/02/turing-patterns/">Turing patterns</a>. Here again simple rules lead to complex behaviour. In this case simple interactions between two chemicals, called <em>activator</em> and <em>inhibitor</em>, give rise to complex patterns in the organisation of cells, colours on the skins of animals, and maybe even in the structure of galaxies.</p>
 
 <p>In the cellular automaton version of Turing's morphogenesis, each cell on a square grid represents a cell of an animal. Such cells possess two numbers which are intended to represent the concentrations of the activator and inhibitor chemicals at given point in time. The rules for updating to the next point in time are chosen to simulate the production / absorption of these chemicals by cells and the diffusion of those chemicals from areas of high to areas of low concentration.</p>
 
 <p>We say that a cell is <em>activated</em> if the concentration of activator in that cell is greater than the level of inhibitor. In the simulation you can download from <a href="https://bitbucket.org/dominicverity/turing-pattern-generator">Dom's Turing Pattern Generator</a> active cells are displayed in yellow and inactive ones in black, and by selection of different rates of diffusion it gives rise to patterns very reminiscent of the shapes found in the pelts of big cats or the surfaces of corals.</p>
 
-<h3>The Hipster programming language</h3>
+<h3>The Hipster programming language </h3>
 
 <p>The <em>Hipster</em> programming language is a <a href="https://en.wikipedia.org/wiki/Domain-specific_language">domain specific language (DSL)</a> that has been designed as a tool for specifying and exploring cellular automata. It is an <a href="https://en.wikipedia.org/wiki/Imperative_programming">imperative</a> language based on a number of experimental cellular automata languages that have emerged over the years, such as <a href="http://www.complex.iastate.edu/download/Trend/">(j)Trend</a> and <a href="https://pdfs.semanticscholar.org/023c/d739963210853d8b83599ea90c1450273a89.pdf">CAOS</a> for example . Indeed, the name Hipster has been chosen as a pun on Trend(y).</p>
 
@@ -69,7 +69,7 @@
 
 <p>The Hipster language is intended to deliver many of these advantages. For our purposes in COMP332, it is designed to be simple to use and largely to generate code to run on the Java Virtual Machine (JVM). It could, however, easily be re-targeted to generate code for FPGAs and graphics arrays.</p>
 
-<h3>The Game of Life written in Hipster</h3>
+<h3>The Game of Life written in Hipster </h3>
 
 <p>The following annotated implementation of the Game of Life exposes many of the peculiarities of the Hipster language:</p>
 
@@ -201,11 +201,11 @@ initialiser fourGliders {
 }
 </code></pre>
 
-<h3>The structure of Hipster code</h3>
+<h3>The structure of Hipster code </h3>
 
 <p>Hipster builds upon familiar principles in the design of imperative languages. A Hipster program comprises a sequence of <em>top level declarations</em> which can be of the following constructs:</p>
 
-<h4>Declarations of global constants.</h4>
+<h4>Declarations of global constants. </h4>
 
 <p>These are of the familiar form:</p>
 
@@ -218,7 +218,7 @@ initialiser fourGliders {
 
 <p>What is more, Hipster makes no guarantees about the order in which cells will be updated and so the use of global variables in the cell updater function would lead to unpredictable behaviours.</p>
 
-<h4>Declarations of functions.</h4>
+<h4>Declarations of functions. </h4>
 
 <p>These are constructs that start with the keyword <code>function</code>, like so:</p>
 
@@ -227,18 +227,18 @@ initialiser fourGliders {
 }
 </code></pre>
 
-<p>Such a function can return a value of type specified after the <code>:</code> using the <code>return</code> statement, and can either be called from within expressions (if they have a return type) or as statements (if they have no return type). Functions can only be called from source code locations after the closing brace of their bodies, so in particular they cannot call themselves recursively. </p>
+<p>Such a function can return a value of type specified after the <code>:</code> using the <code>return</code> statement, and can either be called from within expressions (if they have a return type) or as statements (if they have no return type). Functions can only be called from source code locations after the closing brace of their bodies, so in particular they cannot call themselves recursively.</p>
 
-<h4>A dimension declaration</h4>
+<h4>A dimension declaration </h4>
 
 <p>This declaration specifies how many cells wide each dimension is:</p>
 
 <pre><code>dimension(100 cyclic, 200);
 </code></pre>
 
-<p>In principle a cellular automaton could have an arbitrary number of dimensions, but the compiler we will build will only allow 1-D and 2-D automata. A dimension can be declared <code>cyclic</code> meaning that it wraps around at its edges, so cells on one side of that dimension are direct neighbours with corresponding cells on the opposite side. </p>
+<p>In principle a cellular automaton could have an arbitrary number of dimensions, but the compiler we will build will only allow 1-D and 2-D automata. A dimension can be declared <code>cyclic</code> meaning that it wraps around at its edges, so cells on one side of that dimension are direct neighbours with corresponding cells on the opposite side.</p>
 
-<h4>A neighbourhood declaration</h4>
+<h4>A neighbourhood declaration </h4>
 
 <p>A declaration of the following form</p>
 
@@ -254,9 +254,9 @@ initialiser fourGliders {
 <pre><code>neighbour new_me = me;
 </code></pre>
 
-<h4>An updater declaration</h4>
+<h4>An updater declaration </h4>
 
-<p>A declaration of the following form </p>
+<p>A declaration of the following form</p>
 
 <pre><code>updater {
   ..... // body statements
@@ -265,7 +265,7 @@ initialiser fourGliders {
 
 <p>which specifies the code which computes and sets the new state of the current cell in the next generation using its state information and the states of its neighbours. To update the simulation from one generation to the next this will be executed by its runtime exactly once for each cell. The runtime does not guarantee the order in which cells are updated, indeed it doesn't even guarantee that those updates are even made by the same machine. It could even run your automaton on a massive network of computers connected via the internet!</p>
 
-<h4>A colour mapper declaration</h4>
+<h4>A colour mapper declaration </h4>
 
 <p>The colour mapper provides a way for the simulation to translate the state of each cell into something that can be displayed on the screen. A mapper is declared using a top level declaration of the following form</p>
 
@@ -286,9 +286,9 @@ mapper {
 
 <p>given in the game of life example will cause a cell of the simulation to be displayed as a group of pixels in the colour white if it is alive and in the colour black if it is dead.</p>
 
-<p>In order to facilitate the construction of these sRGB integers, Hipster allows programmers to use hexadecimal notation for integers and provides a number of utility functions for bit-wise manipulations of integers </p>
+<p>In order to facilitate the construction of these sRGB integers, Hipster allows programmers to use hexadecimal notation for integers and provides a number of utility functions for bit-wise manipulations of integers</p>
 
-<h4>Initialiser declarations</h4>
+<h4>Initialiser declarations </h4>
 
 <p>Initialisers provide a mechanism that allows the Hipster programmer to specify how the starting state (at time <code>t=0</code>) of a simulation will be setup. There may be any number of initialisers in a Hipster program, and these are introduced using a top level declaration of the following form:</p>
 
@@ -301,12 +301,12 @@ mapper {
 
 <p>Initialisers are slightly special beasts. The code they can legally contain is subject to far fewer constraints than the code that can appear in an updater. For example, it can use <code>for</code> loops and <code>cell</code> statements to iterate over the entire simulation grid and set the states of many cells. What is more, it can either set cells to pre-specified starting values or it can use a random number generator to randomly assign values to cells. The Hipster semantic analyser is constructed to ensure that the more permissive constructs that can appear in initialisers are rejected if they occur in the body of an updater or in the body of any function called from that updater.</p>
 
-<h3>The grammar for top level declarations</h3>
+<h3>The grammar for top level declarations </h3>
 
 <p>We may summarise the syntactic aspects of the top level structure of a Hipster program in the following grammar:</p>
 
 <pre><code>program : topleveldecl+
-
+    
 topleveldecl : constdecl
              | fundecl
              | dimdecl
@@ -315,36 +315,36 @@ topleveldecl : constdecl
              | updaterdecl
              | mapperdecl
              | initdecl
-
+    
 tipe : &quot;boolean&quot; | &quot;int&quot; | &quot;float&quot; | &quot;neighbour&quot;
-
+    
 constdecl : tipe idndef &quot;=&quot; expr &quot;;&quot;
-
+    
 idndecl : tipe idndef
-
+    
 idndecllist : empty
             | idndecl (&quot;,&quot; idndecl)* 
-
+    
 fundecl : &quot;function&quot; idndef &quot;(&quot; idndecllist &quot;)&quot; (&quot;:&quot; tipe)? &quot;{&quot; statement* &quot;}&quot;
-
+    
 dim : expr &quot;cyclic&quot;?
-
+    
 dimdecl : &quot;dimension&quot; &quot;(&quot; dim (&quot;,&quot; dim)* &quot;)&quot; &quot;;&quot;
-
+    
 nbrdef : idndef &quot;=&quot; coordexpr
-
+    
 neighbourdecl : &quot;neighbourhood&quot; nbrdef (&quot;,&quot; nbrdef)* &quot;;&quot;
-
+    
 statedecl : &quot;state&quot; &quot;{&quot; vardecl* &quot;}&quot;
-
+    
 updaterdecl : &quot;updater&quot; &quot;{&quot; statement* &quot;}&quot;
-
+    
 mapperdecl : &quot;mapper&quot; &quot;{&quot; statement* &quot;}&quot;
-
+    
 initdecl : &quot;initialiser&quot; idndef &quot;{&quot; statement* &quot;}&quot;
 </code></pre>
 
-<h3>Expressions in Hipster</h3>
+<h3>Expressions in Hipster </h3>
 
 <p>Expressions in Hipster may involve values of type <code>boolean</code>, <code>int</code>, <code>float</code> or <code>neighbour</code> and the language provides a fairly standard set of operators for manipulating these. These are summarised in the following grammar fragment:</p>
 
@@ -371,7 +371,7 @@ initdecl : &quot;initialiser&quot; idndef &quot;{&quot; statement* &quot;}&quot;
      | &quot;false&quot;
      | intconst
      | floatconst
-
+         
 funapp : idnuse &quot;(&quot; (empty | expr (&quot;,&quot; expr)*) &quot;)&quot;  // function application.
 </code></pre>
 
@@ -383,7 +383,7 @@ funapp : idnuse &quot;(&quot; (empty | expr (&quot;,&quot; expr)*) &quot;)&quot;
 <p>This grammar is, of course, ambiguous as it stands, and it is disambiguated by the following precedence and associativity rules:</p>
 
 <ol>
-<li>The following expression constructs have precedence as shown from lowest to highest with constructs on the same line having the same precedence:
+<li><p>The following expression constructs have precedence as shown from lowest to highest with constructs on the same line having the same precedence:</p>
 
 <ul>
 <li>boolean operators</li>
@@ -395,7 +395,7 @@ funapp : idnuse &quot;(&quot; (empty | expr (&quot;,&quot; expr)*) &quot;)&quot;
 <li><p>All binary expression operators are left associative, except for the relational operators which are not associative.</p></li>
 </ol>
 
-<h3>Statements in Hipster</h3>
+<h3>Statements in Hipster </h3>
 
 <p>The statements provided by Hipster will mostly be familiar. The primary novelties are a specialised statement for iterating over sets of neighbours, a construct for referring to cells by their location on the simulation grid and a case construct which can match ranges of integer and neighbour values. As discussed above, the Hipster semantic analyser restricts the use of some of these constructs within the cell updater function or any function (indirectly) called from there.</p>
 
@@ -418,12 +418,12 @@ funapp : idnuse &quot;(&quot; (empty | expr (&quot;,&quot; expr)*) &quot;)&quot;
 <pre><code>vardecl : tipe idndef (&quot;=&quot; expr)? &quot;;&quot;
 </code></pre>
 
-<p>Syntactically the only difference between the two is that constant declarations must have an initialising expression (after an <code>=</code> sign) whereas that initialisation clause is optional in in a variable declaration. </p>
+<p>Syntactically the only difference between the two is that constant declarations must have an initialising expression (after an <code>=</code> sign) whereas that initialisation clause is optional in in a variable declaration.</p>
 
 <p>Variables are local to the immediately enclosing block. They are scoped lexically and their extent ranges from the end of their declaration to the end of the immediately enclosing block. A block is simply a sequence of statements enclosed by a pair of curly braces (<code>{</code> and <code>}</code>):</p>
 
 <pre><code>block : &quot;{&quot; stmt* &quot;}&quot;
-
+    
 emptystmt : &quot;;&quot;
 </code></pre>
 
@@ -459,7 +459,7 @@ assignstmt : lvalue &quot;=&quot; expr &quot;;&quot;
 <pre><code>ifstmt : &quot;if&quot; expr &quot;then&quot; statement (&quot;else&quot; statement)?
 </code></pre>
 
-<p>We handle the dangling <code>else</code> ambiguity in the usual way. </p>
+<p>We handle the dangling <code>else</code> ambiguity in the usual way.</p>
 
 <p>The <code>for</code> loop in Hipster obeys the following syntax</p>
 
@@ -474,14 +474,14 @@ assignstmt : lvalue &quot;=&quot; expr &quot;;&quot;
 <li>It is an error to make an assignment to the control variable of a <code>for</code> loop within the extent of its body.</li>
 </ul>
 
-<p>Use of <code>for</code> loops is forbidden in the updater function or functions (indirectly) called from it. The use of <code>for</code> loops in update contexts can result in very long cell update times, and is generally unnecessary. The primary use of <code>for</code> loops is in initialiser code, where they are used to iterate over and initialise large collections of cells. </p>
+<p>Use of <code>for</code> loops is forbidden in the updater function or functions (indirectly) called from it. The use of <code>for</code> loops in update contexts can result in very long cell update times, and is generally unnecessary. The primary use of <code>for</code> loops is in initialiser code, where they are used to iterate over and initialise large collections of cells.</p>
 
 <p>It is, however, common for updater functions to iterate over (a subset of) the neighbours of the current cell, so Hipster provides a specialised control structure for that purpose:</p>
 
 <pre><code>neighbourset : &quot;all&quot;
              | &quot;others&quot;
              | &quot;[&quot; idnuse (&quot;,&quot; idnuse)* &quot;]&quot;
-
+    
 iteratestmt : &quot;iterate&quot; idndef &quot;over&quot; neighbourset statement
 </code></pre>
 
@@ -522,32 +522,32 @@ iterate current over others
 
 <p>The expression immediately after the <code>cell</code> keyword specifies the coordinate of a cell on the simulation grid and that cell is made the current cell for the execution of the following body statement. The cell updater should only have access to the current cell and it immediate neighbours, a rule that use of the <code>cell</code> construct in an updater would clearly break.</p>
 
-<h2>Hipster semantic rules</h2>
+<h2>Hipster semantic rules </h2>
 
 <p>The following sections explain the semantic rules of Hipster. A couple of plot points to look out for amongst these are:</p>
 
 <ul>
 <li><p>The Hipster language makes provision for a library or <em>prelude</em> of primitive utility functions to be loaded when a Hipster program is executed. These largely provide a range of basic numerical functions such as maximum and minimum, trigonometric operations, a random number generator and so forth. The Hipster compiler pre-loads the initial environment with information about these symbols, the types of their parameters and so forth.</p></li>
 <li><p>As discussed above, there are certain statements and functions in Hipster that may <strong>only</strong> be executed from within an initialiser function. These include things like the <code>cell</code> and <code>for</code> statements, whose use is disallowed inside the cell updater and colour mapper functions. The use of some pre-loaded prelude functions, such as the random number generator, are also prohibited in these locations. We say that a statement or function which <strong>may</strong> be used in the updater function is <em>clean</em>, otherwise it is said to be <em>tainted</em>. It is the role of the semantic analyser to make sure that only clean functions may be executed from within the cell updater or colour mapper.</p></li>
-<li><p>In a similar fashion, access to the state fields of various cells is restricted in a number of ways. For example, while updater code my access the state of neighbour cells it may only write to the state of the current cell (<code>me</code>). On the other hand, code in the colour mapper may only access the state of the current cell and it may not write to the state of <strong>any</strong> cell.</p></li>
+<li><p>In a similar fashion, access to the state fields of various cells is restricted in a number of ways. For example, while updater code may access the state of neighbour cells it may only write to the state of the current cell (<code>me</code>). On the other hand, code in the colour mapper may only access the state of the current cell and it may not write to the state of <strong>any</strong> cell.</p></li>
 </ul>
 
-<h3>Name analysis</h3>
+<h3>Name analysis </h3>
 
 <p>Many languages do name and type analysis together, the existance of a identifier with no type is evidence that it is not defined. This is how Hipster's semantic analysis is done. The framework provides an implementation of name and type analysis for Hipster, along the lines of the approach used in the expression language compiler.</p>
 
-<h4>Defining and applied instances</h4>
+<h4>Defining and applied instances </h4>
 
 <p>Like most languages, Hipster name occurrences come in two varieties: defining occurrences (represented by <code>IdnDef</code> nodes in the tree), and applied occurrences (represented by <code>IdnUse</code> nodes). Defining occurrences appear as the:</p>
 
 <ul>
-<li>names in local variable and top-level constant declarations,</li>
-<li>names of state fields in a <code>state</code> declaration,</li>
-<li>neighbour names in a <code>neighbourhood</code> declaration,</li>
-<li>name of a function defined in a <code>function</code> declaration,</li>
-<li>names of the parameters to a function in a <code>function</code> declaration,</li>
-<li>name of the initialiser block defined in an <code>initialiser</code> declaration, and</li>
-<li>names of control variables in a <code>for</code> or <code>iterate...over</code> statement.</li>
+<li> names in local variable and top-level constant declarations,</li>
+<li> names of state fields in a <code>state</code> declaration,</li>
+<li> neighbour names in a <code>neighbourhood</code> declaration,</li>
+<li> name of a function defined in a <code>function</code> declaration,</li>
+<li> names of the parameters to a function in a <code>function</code> declaration,</li>
+<li> name of the initialiser block defined in an <code>initialiser</code> declaration, and</li>
+<li> names of control variables in a <code>for</code> or <code>iterate...over</code> statement.</li>
 </ul>
 
 <p>All other identifier occurrences are applied and occur as plain names in expressions and l-values. Hipster has a single name space so, for example, the names of variables can shadow identically named functions. So in the following code</p>
@@ -585,20 +585,20 @@ iterate current over others
 <p>The following identifier instances are defining:</p>
 
 <ul>
-<li><code>width</code> and <code>height</code> in lines 1 and 2 (constant declarations),</li>
-<li><code>N</code>, <code>S</code>, <code>W</code>, <code>E</code>, <code>NE</code>, <code>SE</code>, <code>NW</code> and <code>SW</code> in lines 6-8 (neighbour definitions),</li>
-<li><code>alive</code> in line 11 (state field declaration),</li>
-<li><code>count</code> in line 15 (local variable declaration),</li>
-<li><code>current</code> in line 17 and <code>nbr</code> in line 26 (control variable of <code>iterate...over</code> statement),</li>
-<li><code>glider</code> in line 24 (declared function name), and</li>
-<li><code>row</code> and <code>col</code> in line 24 (parameter declarations).</li>
+<li> <code>width</code> and <code>height</code> in lines 1 and 2 (constant declarations),</li>
+<li> <code>N</code>, <code>S</code>, <code>W</code>, <code>E</code>, <code>NE</code>, <code>SE</code>, <code>NW</code> and <code>SW</code> in lines 6-8 (neighbour definitions),</li>
+<li> <code>alive</code> in line 11 (state field declaration),</li>
+<li> <code>count</code> in line 15 (local variable declaration),</li>
+<li> <code>current</code> in line 17 and <code>nbr</code> in line 26 (control variable of <code>iterate...over</code> statement),</li>
+<li> <code>glider</code> in line 24 (declared function name), and</li>
+<li> <code>row</code> and <code>col</code> in line 24 (parameter declarations).</li>
 </ul>
 
-<p>All the remaining instances of identifiers in this code are applied instances. </p>
+<p>All the remaining instances of identifiers in this code are applied instances.</p>
 
-<h4>Scope rules</h4>
+<h4>Scope rules </h4>
 
-<p>The scoping rules of Hipster are relatively straightforward, and largely follow rules you'd be familiar with from your experience of <code>C</code> or <code>Java</code>. </p>
+<p>The scoping rules of Hipster are relatively straightforward, and largely follow rules you'd be familiar with from your experience of <code>C</code> or <code>Java</code>.</p>
 
 <p>In the following rules we use the term <em>code block</em> to denote the, possibly empty, sequence of statements between a matching pair of curly braces in the body of a <code>function</code>, <code>updater</code> or <code>initialiser</code> declaration:</p>
 
@@ -662,7 +662,7 @@ updater {
 
 <p>the uses of <code>i</code> in line 5 refers to the variable declared in line 4, rather than that declared on line 2. What is more, the uses of <code>i</code> in line 7 refer to the variable declared in line 2.</p>
 
-<p>Note that our rules about the scopes that apply to the initialiser expressions in variable declarations imply that is the following code</p>
+<p>Note that our rules about the scopes that apply to the expressions on the right-hand side of <code>=</code> symbols in variable declarations imply that in the following code</p>
 
 <pre><code> 1 updater {
  2   int i = 10;
@@ -674,7 +674,7 @@ updater {
 
 <p>the use instance of <code>i</code> on the left hand of the equals sign in the declaration on line 4 actually refers to the variable declared in the outer scope on line 2.</p>
 
-<h4>Entities</h4>
+<h4>Entities </h4>
 
 <p>When an identifier is brought into scope, an entry for it is added to the environment table. That entry is a key-value pair whose key is the name of the identifier and whose value is an <em>entity</em> describing its declared properties.</p>
 
@@ -688,27 +688,27 @@ updater {
 <li><p><code>ControlVariable</code> used to label those identifiers that are control variables introduced in a <code>for</code> or <code>iterate...over</code> statement. An object of this class encapsulates the type of that control variable. This type is <code>int</code> for control variables introduced in <code>for</code> statements and <code>neighbour</code> for control variables introduced in <code>iterate...over</code> statements.</p></li>
 <li><p><code>Neighbour</code> used to label those identifiers that are declared to be neighbour symbols in a top-level <code>neighbourhood</code> declaration. An object of this class encapsulates a vector of coordinate values (constant integers) specifying the coordinates of that neighbour relative to the current cell.</p></li>
 <li><p><code>Function</code> used to label those identifiers that are declared to be a function name in a top-level <code>function</code> declaration. These encapsulate a return type, a list of parameter types, and a reference to the defining <code>function</code> declaration node.</p></li>
-<li><p><code>BuiltIn</code> used to label those identifiers that are reserved as the names of built-in functions in the Hipster prelude. These encapsulate a return type, a list of parameter types, and a <code>tainted</code> flag. This <code>tainted</code> flag is set if the built-in function in question should <strong>not</strong> be executed from within the <code>updater</code> or colour <code>mapper</code> functions. </p></li>
+<li><p><code>BuiltIn</code> used to label those identifiers that are reserved as the names of built-in functions in the Hipster prelude. These encapsulate a return type, a list of parameter types, and a <code>tainted</code> flag. This <code>tainted</code> flag is set if the built-in function in question should <strong>not</strong> be executed from within the <code>updater</code> or colour <code>mapper</code> functions.</p></li>
 </ul>
 
 <p>The Kiama library also pre-defines two basic error entities:</p>
 
 <ul>
-<li><p><code>UnknownEntity</code> if we lookup an identifier in the environment and it isn't defined in there, then an object of this type is returned. </p></li>
+<li><p><code>UnknownEntity</code> if we lookup an identifier in the environment and it isn't defined in there, then an object of this type is returned.</p></li>
 <li><p><code>MultipleEntity</code> if we add an identifier to the environment and it has already been defined in the current scope, then this entity is used to mark the re-defining instance of that identifier.</p></li>
 </ul>
 
-<h4>Tainted built-ins?</h4>
+<h4>Tainted built-ins? </h4>
 
-<p>At the moment the only two tainted built-ins in Hipster are the random number generators <code>rnd</code> and <code>frnd</code>. </p>
+<p>At the moment the only two tainted built-ins in Hipster are the random number generators <code>rnd</code> and <code>frnd</code>.</p>
 
-<p>By convention, the execution of a cellular automaton should be entirely <em>deterministic</em>, that is to say that the states of cells in the next generation should be completely determined only by the states of cells in the current generation. So whenever we execute the automaton from a fixed starting configuration we should always get the same result. </p>
+<p>By convention, the execution of a cellular automaton should be entirely <em>deterministic</em>, that is to say that the states of cells in the next generation should be completely determined only by the states of cells in the current generation. So whenever we execute the automaton from a fixed starting configuration we should always get the same result.</p>
 
 <p>All of the built-in functions, except for those that generate random numbers, are <em>pure</em> in the sense that if you call them at two different times but pass them the same arguments on each occasion they will give the same results. So if you only use these pure functions in an <code>updater</code> function, then your cellular automaton will be guaranteed to behave deterministically. This wouldn't be the case, however, if we were able to use random numbers to determine the new states of cells.</p>
 
 <p>On the other hand, random number generators are often useful in initialising a run of a cellular automaton. They allow us to set cells to randomised starting states and then see how the system evolves deterministically from that point.</p>
 
-<h4>Implementing name analysis</h4>
+<h4>Implementing name analysis </h4>
 
 <p>The name analyser in the Hipster compiler is largely implemented using three interrelated attributes of the Hipster program tree, whose definitions may be found in the <code>NameAnalysis.scala</code> module in the Hipster compiler source code tree:</p>
 
@@ -737,7 +737,7 @@ updater {
     // If the last case isn't triggered then we must be at an `IdnDef`
     // node, so use the enclosing context to work out the entity
     // associated with this defining instance:
-
+    
     .... case clauses to analyse each kind of enclosing declaration.
 
   }
@@ -768,7 +768,7 @@ updater {
 }
 </code></pre>
 
-<h3>Type analysis</h3>
+<h3>Type analysis </h3>
 
 <p>The Hipster language doesn't provide any mechanisms for defining any new types and it only provides four basic builtin types:</p>
 
@@ -789,14 +789,14 @@ updater {
 <li><p>The type of an identifier expression is the declared type of that identifier. The type of an identifier expression referring to the control variable of a <code>for</code> loop is <code>int</code>. The type of an identifier expression referring to the control variable of an <code>iterate...over</code> loop is <code>neighbour</code>.</p></li>
 <li><p>The type of a manifest integer constant is <code>int</code>, the type of a manifest floating point constant is <code>float</code> and the type of a boolean constant (<code>true</code> or <code>false</code>) is <code>boolean</code>.</p></li>
 <li><p>The type of any neighbour constant declared in the top-level <code>neighbourhood</code> declaration is <code>neighbour</code>.</p></li>
-<li>The operands of any arithmetic operator (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code> etc.) must be of type <code>int</code> or <code>float</code>. The rules for inferring the types of expressions built using arithmetic operators are:
+<li><p>The operands of any arithmetic operator (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code> etc.) must be of type <code>int</code> or <code>float</code>. The rules for inferring the types of expressions built using arithmetic operators are:</p>
 
 <ul>
-<li>for a unary arithmetic operator <code>aop</code> the type of an expression <code>aop expr</code> is the same as the type of the sub-expression <code>expr</code>, and</li>
-<li>for a binary arithmetic operator <code>aop</code> the type of an expression <code>expr1 aop expr2</code> is <code>int</code> if the types of <code>expr1</code> and <code>expr2</code> are both <code>int</code> and otherwise the type of that expression is <code>float</code>.</li>
+<li> for a unary arithmetic operator <code>aop</code> the type of an expression <code>aop expr</code> is the same as the type of the sub-expression <code>expr</code>, and</li>
+<li> for a binary arithmetic operator <code>aop</code> the type of an expression <code>expr1 aop expr2</code> is <code>int</code> if the types of <code>expr1</code> and <code>expr2</code> are both <code>int</code> and otherwise the type of that expression is <code>float</code>.</li>
 </ul></li>
 <li><p>The operands of the equality operator <code>==</code> can be any of the four types and those types must either both be <code>boolean</code>, both be <code>neighbour</code>, or both be of one of the numeric types <code>int</code> or <code>float</code>. The type of an equality expression <code>expr1 == expr2</code> is <code>boolean</code>.</p></li>
-<li><p>The operands of any other rational operator (<code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, or <code>=&gt;</code>) must be of type <code>boolean</code>, <code>int</code> or <code>float</code> and those types must either both be boolean, or both be one of the numeric types <code>int</code> or <code>float</code>. The type of a relational expression <code>expr1 rop expr2</code> is <code>boolean</code>.</p></li>
+<li><p>The operands of any other rational operator (<code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, or <code>=&gt;</code>) must be of type <code>boolean</code>, <code>int</code> or <code>float</code> and those types must either both be <code>boolean</code>, or both be one of the numeric types <code>int</code> or <code>float</code>. The type of a relational expression <code>expr1 rop expr2</code> is <code>boolean</code>.</p></li>
 <li><p>The operands of any boolean operator (<code>||</code>, <code>&amp;&amp;</code>, or <code>!</code>) must be of type <code>boolean</code> and the type of a boolean expression <code>expr1 bop expr1</code> is <code>boolean</code>.</p></li>
 <li><p>The type of a neighbour state expression <code>nbr:state</code> is equal to the type of the state field identifier <code>state</code>.</p></li>
 <li><p>A function call expression that calls a user defined or built-in function is equal to the return type of the function being called.</p></li>
@@ -819,7 +819,7 @@ updater {
 <li><p>The return type of function called in a function call <em>statement</em> can be any type. The returned value is discarded.</p></li>
 </ol>
 
-<h4>Implementing type analysis</h4>
+<h4>Implementing type analysis </h4>
 
 <p>The Hipster type analyser implements type inference and type checking using two attributes:</p>
 
@@ -828,14 +828,14 @@ updater {
 <li><p><code>expTipe</code>: which attributes each expression node with the set of types that it may legally assume. This is computed on the basis of the context in which the expression is located.</p></li>
 </ul>
 
-<p>The definitions of these attributes may be found in the <code>SemanticAnalysis.scala</code> module in the Hipster compiler source code tree. A type error message is generated, by the error reporting code in the <code>SemanticAnalysis.scala</code> module, for any expression node whose inferred <code>tipe</code> is not a member of the set given by the <code>expTipe</code> attribute.</p>
+<p>The definitions of these attributes may be found in the <code>TypeAnalysis.scala</code> module in the Hipster compiler source code tree. A type error message is generated, by the error reporting code in the <code>SemanticAnalysis.scala</code> module, for any expression node whose inferred <code>tipe</code> is not a member of the set given by the <code>expTipe</code> attribute.</p>
 
-<p>We might note that if the types given by the <code>tipe</code> attribute(s) of the operand children do not satisfy the rules given above for their operator parent then the <code>tipe</code> attribute of that parent node is set to the <code>unknown</code> type. Unknown types are propagated up the expression tree by letting the <code>tipe</code> attribute of a parent operator node by <code>unknown</code> whenever the <code>tipe</code> attribute of any of its children is <code>unknown</code>. We prevent the spurious over reporting of type errors by suppressing such errors for any expression node whose inferred type is <code>unknown</code>.</p>
+<p>We might note that if the types given by the <code>tipe</code> attribute(s) of the operand children do not satisfy the rules given above for their operator parent then the <code>tipe</code> attribute of that parent node is set to the <code>unknown</code> type. Unknown types are propagated up the expression tree by letting the <code>tipe</code> attribute of a parent operator node be <code>unknown</code> whenever the <code>tipe</code> attribute of any of its children is <code>unknown</code>. We prevent the spurious over reporting of type errors by suppressing such errors for any expression node whose inferred type is <code>unknown</code>.</p>
 
 <hr />
 
-<p><a href="http://orcid.org/0000-0002-4137-6982">Dominic Verity</a><br/>
-Last modified: 11 September 2017<br/>
+<p><a href="http://orcid.org/0000-0002-4137-6982">Dominic Verity</a><br />
+Last modified: 11 September 2017<br />
 <a href="http://mozilla.org/MPL/2.0/">Copyright (c) 2017 by Dominic Verity. Macquarie University. All rights reserved.</a></p>
 
 </body>

@@ -4,7 +4,7 @@
 
 ## Assignment 3 ##
 
-Due: Midnight Sunday 12 November 2017 (end of week 13)  
+Due: 11.55pm Sunday 12 November 2017 (end of week 13)  
 Worth: 15% of unit assessment
 
 Marks breakdown:
