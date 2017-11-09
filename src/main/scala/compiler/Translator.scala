@@ -309,7 +309,7 @@ class Translator (val tree : HipsterTree)
     }) map ((n : String) => {
       val idn = J.IdnUse(getTargetName(s, n))
       n match {
-        case "me" if isInCellBody(s) => J.IdnExp(idn)
+        case "me" if isInCellBody(s) => J.IdnExp(cell)
         case "me" => J.ThisExp()
         case _ if isInCellBody(s) => J.FieldExp(J.IdnExp(cell), idn)
         case _ => J.IdnExp(idn)
