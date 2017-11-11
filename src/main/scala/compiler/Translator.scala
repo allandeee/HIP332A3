@@ -141,10 +141,75 @@ class Translator (val tree : HipsterTree)
           els.map(translateStmt).getOrElse(J.Empty()))
       case ForStmt(i, s, e, st, b) =>
         // FIXME Add your code to translate `for` statements here.
-        J.Empty() // Replace me.
+        val i_var = J.Var(J.IntType(), J.IdnDef(getTargetName(i)), Some(translateExpr(s)))
+        val e_var = J.Var(J.IntType(), J.IdnDef(getTargetName(b, "_end")), Some(translateExpr(e)))
+        val st_var = J.Var(J.IntType(), J.IdnDef(getTargetName(b, "_step")),
+          st.map(translateExpr).orElse(Some(J.IntExp(1))))
+        val d_var = J.Var(J.BooleanType(), J.IdnDef(getTargetName(b, "_dirn")),
+          Some(J.GreaterEqExp(J.IdnExp(J.IdnUse(st_var.name.idn)), J.IntExp(0))))
+        J.Block(Vector(
+          i_var, e_var, st_var, d_var,
+          J.If(
+            J.NotEqualsExp(J.IdnExp(J.IdnUse(st_var.name.idn)), J.IntExp(0)),
+            J.While(
+              J.OrExp(
+                J.AndExp(
+                  J.IdnExp(J.IdnUse(d_var.name.idn)),
+                  J.GreaterEqExp(
+                    J.IdnExp(J.IdnUse(e_var.name.idn)),
+                    J.IdnExp(J.IdnUse(i_var.name.idn))
+                  )
+                ),
+                J.AndExp(
+                  J.NotExp(J.IdnExp(J.IdnUse(d_var.name.idn))),
+                  J.LessEqExp(
+                    J.IdnExp(J.IdnUse(e_var.name.idn)),
+                    J.IdnExp(J.IdnUse(i_var.name.idn))
+                  )
+                )
+              ),
+              J.Block(Vector(
+                translateStmt(b),
+                J.Assign(
+                  J.IdnExp(J.IdnUse(i_var.name.idn)),
+                  J.PlusExp(
+                    J.IdnExp(J.IdnUse(i_var.name.idn)),
+                    J.IdnExp(J.IdnUse(st_var.name.idn))
+                  )
+                )
+              ))
+            ),
+            J.Empty()
+          )
+        )
+
+        )
       case s @ IterateOverStmt(i, ns, b) =>
         // FIXME Add your code to translate `iterate...over` statements here.
-        J.Empty() // Replace me.
+
+        val i_var = J.Var(
+          J.ClassType(J.IdnUse("Cell")),
+          J.IdnDef(getTargetName(i)),
+          None
+        )
+
+        val ns_var = translateNeighbourSet(ns)
+
+        J.Block(
+          i_var+:
+
+          ns_var.flatMap (
+            (n : J.LValue) =>
+              Vector(
+                J.Assign(
+                  J.IdnExp(J.IdnUse(i_var.name.idn)),
+                  n
+                ),
+                translateStmt(b)
+              )
+          )
+        )
+
       case s @ CellStmt(CoordExpr(os), b) =>
         // Enclose translation in a block.
         J.Block(

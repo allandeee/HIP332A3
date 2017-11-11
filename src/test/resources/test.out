@@ -1,0 +1,353 @@
+package org.bitbucket.dominicverity.cellsim;
+
+class CellularAutomaton extends BaseAutomaton {
+
+    private static final int width$5 = 100;
+    private static final int height$6 = 100;
+
+    class Cell extends BaseCell {
+
+        Cell _other$2;
+        Cell _theother$3;
+        Cell N$7;
+        Cell S$8;
+        Cell W$9;
+        Cell E$10;
+        boolean alive$11;
+
+        Cell(Point _loc$1) {
+            super(_loc$1);
+            _other$2 = this;
+            resetCellState();
+        }
+
+        void initNeighbours() {
+            _theother$3 = getOther();
+            N$7 = getCellRel(0, 1);
+            S$8 = getCellRel(0, -1);
+            W$9 = getCellRel(-1, 0);
+            E$10 = getCellRel(1, 0);
+        }
+
+        synchronized void updater() {
+            _other$2.alive$11 = alive$11;
+        }
+
+        synchronized int mapper() {
+            return 0;
+        }
+
+        synchronized void resetCellState() {
+            alive$11 = false;
+        }
+
+        Cell getCellRel(int... _off$4) {
+            return (Cell)getCell(_off$4);
+        }
+
+        Cell getOther() {
+            return (Cell)getNextGen();
+        }
+
+        void otherToSelf() {
+            _other$2 = this;
+        }
+
+        void otherToOther() {
+            _other$2 = _theother$3;
+        }
+    }
+
+    CellularAutomaton() {
+        super();
+        initDims(100, 100);
+        initCycles(false, false);
+        initWorld();
+        addInitialiser("corners", (() -> { corners$13(); }));
+    }
+
+    private void f$12() {
+    }
+
+    void corners$13() {
+        {
+            int i$14 = 0;
+            int _end$16 = width$5 - 1;
+            int _step$17 = 1;
+            boolean _dirn$15 = _step$17 >= 0;
+            if (_step$17 != 0)
+                while (_dirn$15 && _end$16 >= i$14 || (!_dirn$15 && _end$16 <= i$14)) {
+                    {
+                        {
+                            int j$18 = 0;
+                            int _end$20 = height$6 - 1;
+                            int _step$21 = 1;
+                            boolean _dirn$19 = _step$21 >= 0;
+                            if (_step$21 != 0)
+                                while (_dirn$19 && _end$20 >= j$18 || (!_dirn$19 && _end$20 <= j$18)) {
+                                    {
+                                        {
+                                            Cell _cell$22 = getCellAbs(i$14, j$18);
+                                            {
+                                                if (i$14 == 0 || i$14 == width$5 - 1) {
+                                                    if (j$18 == 0)
+                                                        _cell$22._other$2.alive$11 = true;
+                                                    if (j$18 == height$6 - 1)
+                                                        _cell$22._other$2.alive$11 = true;
+                                                    else
+                                                        _cell$22._other$2.alive$11 = false;
+                                                }
+                                                else
+                                                    _cell$22._other$2.alive$11 = false;
+                                            }
+                                        }
+                                    }
+                                    j$18 = j$18 + _step$21;
+                                }
+                        }
+                    }
+                    i$14 = i$14 + _step$17;
+                }
+        }
+    }
+
+    private void empty_for$23() {
+        {
+            int i$24 = 0;
+            int _end$26 = 6;
+            int _step$27 = 1;
+            boolean _dirn$25 = _step$27 >= 0;
+            if (_step$27 != 0)
+                while (_dirn$25 && _end$26 >= i$24 || (!_dirn$25 && _end$26 <= i$24)) {
+
+                    i$24 = i$24 + _step$27;
+                }
+        }
+    }
+
+    private void empty_itr$28(int x$29, int y$30) {
+        {
+            Cell _cell$31 = getCellAbs(x$29, y$30);
+            {
+                Cell nbr$32;
+                nbr$32 = _cell$31.N$7;
+
+                nbr$32 = _cell$31.S$8;
+
+                nbr$32 = _cell$31.W$9;
+
+            }
+        }
+    }
+
+    private void single_stmt_for$33() {
+        int count$34 = 0;
+        {
+            int i$35 = 0;
+            int _end$37 = 6;
+            int _step$38 = 1;
+            boolean _dirn$36 = _step$38 >= 0;
+            if (_step$38 != 0)
+                while (_dirn$36 && _end$37 >= i$35 || (!_dirn$36 && _end$37 <= i$35)) {
+                    count$34 = count$34 + 1;
+                    i$35 = i$35 + _step$38;
+                }
+        }
+    }
+
+    private void single_stmt_itr$39(int x$40, int y$41) {
+        {
+            Cell _cell$42 = getCellAbs(x$40, y$41);
+            {
+                Cell nbr$43;
+                nbr$43 = _cell$42.N$7;
+                nbr$43._other$2.alive$11 = false;
+                nbr$43 = _cell$42.S$8;
+                nbr$43._other$2.alive$11 = false;
+                nbr$43 = _cell$42.W$9;
+                nbr$43._other$2.alive$11 = false;
+                nbr$43 = _cell$42.E$10;
+                nbr$43._other$2.alive$11 = false;
+                nbr$43 = _cell$42;
+                nbr$43._other$2.alive$11 = false;
+            }
+        }
+    }
+
+    private void block_stmts_for$44(int exp$45, int bse$46) {
+        int pow_res$47 = bse$46;
+        int mult_res$48 = 0;
+        double root_res$49 = bse$46;
+        {
+            int i$50 = 1;
+            int _end$52 = exp$45;
+            int _step$53 = 1;
+            boolean _dirn$51 = _step$53 >= 0;
+            if (_step$53 != 0)
+                while (_dirn$51 && _end$52 >= i$50 || (!_dirn$51 && _end$52 <= i$50)) {
+                    {
+                        pow_res$47 = pow_res$47 * bse$46;
+                        mult_res$48 = mult_res$48 + bse$46;
+                        root_res$49 = root_res$49 / bse$46;
+                    }
+                    i$50 = i$50 + _step$53;
+                }
+        }
+    }
+
+    private void block_stmts_itr$54(int x$55, int y$56) {
+        {
+            Cell _cell$57 = getCellAbs(x$55, y$56);
+            {
+                Cell nbr$58;
+                nbr$58 = _cell$57.N$7;
+                {
+                    if (nbr$58.alive$11 == true)
+                        nbr$58._other$2.alive$11 = false;
+                    else
+                        nbr$58._other$2.alive$11 = true;
+                }
+                nbr$58 = _cell$57.S$8;
+                {
+                    if (nbr$58.alive$11 == true)
+                        nbr$58._other$2.alive$11 = false;
+                    else
+                        nbr$58._other$2.alive$11 = true;
+                }
+                nbr$58 = _cell$57.E$10;
+                {
+                    if (nbr$58.alive$11 == true)
+                        nbr$58._other$2.alive$11 = false;
+                    else
+                        nbr$58._other$2.alive$11 = true;
+                }
+                nbr$58 = _cell$57.W$9;
+                {
+                    if (nbr$58.alive$11 == true)
+                        nbr$58._other$2.alive$11 = false;
+                    else
+                        nbr$58._other$2.alive$11 = true;
+                }
+            }
+        }
+    }
+
+    private void expr_for$59(int end$60) {
+        int stp$61 = -1;
+        {
+            int strt$62 = 5;
+            int _end$64 = end$60;
+            int _step$65 = stp$61;
+            boolean _dirn$63 = _step$65 >= 0;
+            if (_step$65 != 0)
+                while (_dirn$63 && _end$64 >= strt$62 || (!_dirn$63 && _end$64 <= strt$62)) {
+
+                    strt$62 = strt$62 + _step$65;
+                }
+        }
+    }
+
+    private void nest_for$66(int rows$67, int cols$68) {
+        {
+            int i$69 = 0;
+            int _end$71 = rows$67;
+            int _step$72 = 1;
+            boolean _dirn$70 = _step$72 >= 0;
+            if (_step$72 != 0)
+                while (_dirn$70 && _end$71 >= i$69 || (!_dirn$70 && _end$71 <= i$69)) {
+                    {
+                        int j$73 = i$69;
+                        int _end$75 = cols$68;
+                        int _step$76 = 1;
+                        boolean _dirn$74 = _step$76 >= 0;
+                        if (_step$76 != 0)
+                            while (_dirn$74 && _end$75 >= j$73 || (!_dirn$74 && _end$75 <= j$73)) {
+
+                                j$73 = j$73 + _step$76;
+                            }
+                    }
+                    i$69 = i$69 + _step$72;
+                }
+        }
+    }
+
+    private void nest_itr$77(int x$78, int y$79) {
+        {
+            Cell _cell$80 = getCellAbs(x$78, y$79);
+            {
+                Cell top_btm$81;
+                top_btm$81 = _cell$80.N$7;
+                {
+                    {
+                        Cell lft_rgt$82;
+                        lft_rgt$82 = _cell$80.E$10;
+                        lft_rgt$82._other$2.alive$11 = true;
+                        lft_rgt$82 = _cell$80.W$9;
+                        lft_rgt$82._other$2.alive$11 = true;
+                    }
+                }
+                top_btm$81 = _cell$80.S$8;
+                {
+                    {
+                        Cell lft_rgt$82;
+                        lft_rgt$82 = _cell$80.E$10;
+                        lft_rgt$82._other$2.alive$11 = true;
+                        lft_rgt$82 = _cell$80.W$9;
+                        lft_rgt$82._other$2.alive$11 = true;
+                    }
+                }
+            }
+        }
+    }
+
+    private void set_nbrs_itr$83(int x$84, int y$85) {
+        {
+            Cell _cell$86 = getCellAbs(x$84, y$85);
+            {
+                Cell n_all$87;
+                n_all$87 = _cell$86.N$7;
+
+                n_all$87 = _cell$86.S$8;
+
+                n_all$87 = _cell$86.W$9;
+
+                n_all$87 = _cell$86.E$10;
+
+                n_all$87 = _cell$86;
+
+            }
+        }
+        {
+            Cell _cell$88 = getCellAbs(x$84, y$85);
+            {
+                Cell n_others$89;
+                n_others$89 = _cell$88.N$7;
+
+                n_others$89 = _cell$88.S$8;
+
+                n_others$89 = _cell$88.W$9;
+
+                n_others$89 = _cell$88.E$10;
+
+            }
+        }
+        {
+            Cell _cell$90 = getCellAbs(x$84, y$85);
+            {
+                Cell n_set$91;
+                n_set$91 = _cell$90.N$7;
+
+                n_set$91 = _cell$90.E$10;
+
+            }
+        }
+    }
+
+    BaseCell makeCell(Point _loc$1) {
+        return new Cell(_loc$1);
+    }
+
+    Cell getCellAbs(int... _loc$1) {
+        return (Cell)getCell(_loc$1);
+    }
+}
