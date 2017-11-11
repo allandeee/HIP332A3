@@ -9,6 +9,10 @@ updater {
 
 }
 mapper {
+    // FOLLOWING IS NOT ALLOWED
+    //for i = 1 to 3;
+    //cell[width-1,height-1]
+    //    iterate nbr over [N,S];
     return(0);
 }
 // for loop in initialiser
@@ -18,9 +22,11 @@ initialiser corners {
             cell [i, j] {
                 if ((i == 0) || (i == (width-1))) then {
                     if (j == 0) then
-                        alive = true;
+                        iterate nbr over all
+                            nbr:alive = true;
                     if (j == (height-1)) then
-                        alive = true;
+                        iterate nbr over all
+                            nbr:alive = true;
                     else
                         alive = false;
                 }

@@ -90,10 +90,32 @@ class CellularAutomaton extends BaseAutomaton {
                                             Cell _cell$22 = getCellAbs(i$14, j$18);
                                             {
                                                 if (i$14 == 0 || i$14 == width$5 - 1) {
-                                                    if (j$18 == 0)
-                                                        _cell$22._other$2.alive$11 = true;
-                                                    if (j$18 == height$6 - 1)
-                                                        _cell$22._other$2.alive$11 = true;
+                                                    if (j$18 == 0) {
+                                                        Cell nbr$23;
+                                                        nbr$23 = _cell$22.N$7;
+                                                        nbr$23._other$2.alive$11 = true;
+                                                        nbr$23 = _cell$22.S$8;
+                                                        nbr$23._other$2.alive$11 = true;
+                                                        nbr$23 = _cell$22.W$9;
+                                                        nbr$23._other$2.alive$11 = true;
+                                                        nbr$23 = _cell$22.E$10;
+                                                        nbr$23._other$2.alive$11 = true;
+                                                        nbr$23 = _cell$22;
+                                                        nbr$23._other$2.alive$11 = true;
+                                                    }
+                                                    if (j$18 == height$6 - 1) {
+                                                        Cell nbr$24;
+                                                        nbr$24 = _cell$22.N$7;
+                                                        nbr$24._other$2.alive$11 = true;
+                                                        nbr$24 = _cell$22.S$8;
+                                                        nbr$24._other$2.alive$11 = true;
+                                                        nbr$24 = _cell$22.W$9;
+                                                        nbr$24._other$2.alive$11 = true;
+                                                        nbr$24 = _cell$22.E$10;
+                                                        nbr$24._other$2.alive$11 = true;
+                                                        nbr$24 = _cell$22;
+                                                        nbr$24._other$2.alive$11 = true;
+                                                    }
                                                     else
                                                         _cell$22._other$2.alive$11 = false;
                                                 }
@@ -111,233 +133,233 @@ class CellularAutomaton extends BaseAutomaton {
         }
     }
 
-    private void empty_for$23() {
+    private void empty_for$25() {
         {
-            int i$24 = 0;
-            int _end$26 = 6;
-            int _step$27 = 1;
-            boolean _dirn$25 = _step$27 >= 0;
-            if (_step$27 != 0)
-                while (_dirn$25 && _end$26 >= i$24 || (!_dirn$25 && _end$26 <= i$24)) {
+            int i$26 = 0;
+            int _end$28 = 6;
+            int _step$29 = 1;
+            boolean _dirn$27 = _step$29 >= 0;
+            if (_step$29 != 0)
+                while (_dirn$27 && _end$28 >= i$26 || (!_dirn$27 && _end$28 <= i$26)) {
 
-                    i$24 = i$24 + _step$27;
+                    i$26 = i$26 + _step$29;
                 }
         }
     }
 
-    private void empty_itr$28(int x$29, int y$30) {
+    private void empty_itr$30(int x$31, int y$32) {
         {
-            Cell _cell$31 = getCellAbs(x$29, y$30);
+            Cell _cell$33 = getCellAbs(x$31, y$32);
             {
-                Cell nbr$32;
-                nbr$32 = _cell$31.N$7;
+                Cell nbr$34;
+                nbr$34 = _cell$33.N$7;
 
-                nbr$32 = _cell$31.S$8;
+                nbr$34 = _cell$33.S$8;
 
-                nbr$32 = _cell$31.W$9;
+                nbr$34 = _cell$33.W$9;
 
             }
         }
     }
 
-    private void single_stmt_for$33() {
-        int count$34 = 0;
+    private void single_stmt_for$35() {
+        int count$36 = 0;
         {
-            int i$35 = 0;
-            int _end$37 = 6;
-            int _step$38 = 1;
-            boolean _dirn$36 = _step$38 >= 0;
-            if (_step$38 != 0)
-                while (_dirn$36 && _end$37 >= i$35 || (!_dirn$36 && _end$37 <= i$35)) {
-                    count$34 = count$34 + 1;
-                    i$35 = i$35 + _step$38;
+            int i$37 = 0;
+            int _end$39 = 6;
+            int _step$40 = 1;
+            boolean _dirn$38 = _step$40 >= 0;
+            if (_step$40 != 0)
+                while (_dirn$38 && _end$39 >= i$37 || (!_dirn$38 && _end$39 <= i$37)) {
+                    count$36 = count$36 + 1;
+                    i$37 = i$37 + _step$40;
                 }
         }
     }
 
-    private void single_stmt_itr$39(int x$40, int y$41) {
+    private void single_stmt_itr$41(int x$42, int y$43) {
         {
-            Cell _cell$42 = getCellAbs(x$40, y$41);
+            Cell _cell$44 = getCellAbs(x$42, y$43);
             {
-                Cell nbr$43;
-                nbr$43 = _cell$42.N$7;
-                nbr$43._other$2.alive$11 = false;
-                nbr$43 = _cell$42.S$8;
-                nbr$43._other$2.alive$11 = false;
-                nbr$43 = _cell$42.W$9;
-                nbr$43._other$2.alive$11 = false;
-                nbr$43 = _cell$42.E$10;
-                nbr$43._other$2.alive$11 = false;
-                nbr$43 = _cell$42;
-                nbr$43._other$2.alive$11 = false;
+                Cell nbr$45;
+                nbr$45 = _cell$44.N$7;
+                nbr$45._other$2.alive$11 = false;
+                nbr$45 = _cell$44.S$8;
+                nbr$45._other$2.alive$11 = false;
+                nbr$45 = _cell$44.W$9;
+                nbr$45._other$2.alive$11 = false;
+                nbr$45 = _cell$44.E$10;
+                nbr$45._other$2.alive$11 = false;
+                nbr$45 = _cell$44;
+                nbr$45._other$2.alive$11 = false;
             }
         }
     }
 
-    private void block_stmts_for$44(int exp$45, int bse$46) {
-        int pow_res$47 = bse$46;
-        int mult_res$48 = 0;
-        double root_res$49 = bse$46;
+    private void block_stmts_for$46(int exp$47, int bse$48) {
+        int pow_res$49 = bse$48;
+        int mult_res$50 = 0;
+        double root_res$51 = bse$48;
         {
-            int i$50 = 1;
-            int _end$52 = exp$45;
-            int _step$53 = 1;
-            boolean _dirn$51 = _step$53 >= 0;
-            if (_step$53 != 0)
-                while (_dirn$51 && _end$52 >= i$50 || (!_dirn$51 && _end$52 <= i$50)) {
+            int i$52 = 1;
+            int _end$54 = exp$47;
+            int _step$55 = 1;
+            boolean _dirn$53 = _step$55 >= 0;
+            if (_step$55 != 0)
+                while (_dirn$53 && _end$54 >= i$52 || (!_dirn$53 && _end$54 <= i$52)) {
                     {
-                        pow_res$47 = pow_res$47 * bse$46;
-                        mult_res$48 = mult_res$48 + bse$46;
-                        root_res$49 = root_res$49 / bse$46;
+                        pow_res$49 = pow_res$49 * bse$48;
+                        mult_res$50 = mult_res$50 + bse$48;
+                        root_res$51 = root_res$51 / bse$48;
                     }
-                    i$50 = i$50 + _step$53;
+                    i$52 = i$52 + _step$55;
                 }
         }
     }
 
-    private void block_stmts_itr$54(int x$55, int y$56) {
+    private void block_stmts_itr$56(int x$57, int y$58) {
         {
-            Cell _cell$57 = getCellAbs(x$55, y$56);
+            Cell _cell$59 = getCellAbs(x$57, y$58);
             {
-                Cell nbr$58;
-                nbr$58 = _cell$57.N$7;
+                Cell nbr$60;
+                nbr$60 = _cell$59.N$7;
                 {
-                    if (nbr$58.alive$11 == true)
-                        nbr$58._other$2.alive$11 = false;
+                    if (nbr$60.alive$11 == true)
+                        nbr$60._other$2.alive$11 = false;
                     else
-                        nbr$58._other$2.alive$11 = true;
+                        nbr$60._other$2.alive$11 = true;
                 }
-                nbr$58 = _cell$57.S$8;
+                nbr$60 = _cell$59.S$8;
                 {
-                    if (nbr$58.alive$11 == true)
-                        nbr$58._other$2.alive$11 = false;
+                    if (nbr$60.alive$11 == true)
+                        nbr$60._other$2.alive$11 = false;
                     else
-                        nbr$58._other$2.alive$11 = true;
+                        nbr$60._other$2.alive$11 = true;
                 }
-                nbr$58 = _cell$57.E$10;
+                nbr$60 = _cell$59.E$10;
                 {
-                    if (nbr$58.alive$11 == true)
-                        nbr$58._other$2.alive$11 = false;
+                    if (nbr$60.alive$11 == true)
+                        nbr$60._other$2.alive$11 = false;
                     else
-                        nbr$58._other$2.alive$11 = true;
+                        nbr$60._other$2.alive$11 = true;
                 }
-                nbr$58 = _cell$57.W$9;
+                nbr$60 = _cell$59.W$9;
                 {
-                    if (nbr$58.alive$11 == true)
-                        nbr$58._other$2.alive$11 = false;
+                    if (nbr$60.alive$11 == true)
+                        nbr$60._other$2.alive$11 = false;
                     else
-                        nbr$58._other$2.alive$11 = true;
+                        nbr$60._other$2.alive$11 = true;
                 }
             }
         }
     }
 
-    private void expr_for$59(int end$60) {
-        int stp$61 = -1;
+    private void expr_for$61(int end$62) {
+        int stp$63 = -1;
         {
-            int strt$62 = 5;
-            int _end$64 = end$60;
-            int _step$65 = stp$61;
-            boolean _dirn$63 = _step$65 >= 0;
-            if (_step$65 != 0)
-                while (_dirn$63 && _end$64 >= strt$62 || (!_dirn$63 && _end$64 <= strt$62)) {
+            int strt$64 = 5;
+            int _end$66 = end$62;
+            int _step$67 = stp$63;
+            boolean _dirn$65 = _step$67 >= 0;
+            if (_step$67 != 0)
+                while (_dirn$65 && _end$66 >= strt$64 || (!_dirn$65 && _end$66 <= strt$64)) {
 
-                    strt$62 = strt$62 + _step$65;
+                    strt$64 = strt$64 + _step$67;
                 }
         }
     }
 
-    private void nest_for$66(int rows$67, int cols$68) {
+    private void nest_for$68(int rows$69, int cols$70) {
         {
-            int i$69 = 0;
-            int _end$71 = rows$67;
-            int _step$72 = 1;
-            boolean _dirn$70 = _step$72 >= 0;
-            if (_step$72 != 0)
-                while (_dirn$70 && _end$71 >= i$69 || (!_dirn$70 && _end$71 <= i$69)) {
+            int i$71 = 0;
+            int _end$73 = rows$69;
+            int _step$74 = 1;
+            boolean _dirn$72 = _step$74 >= 0;
+            if (_step$74 != 0)
+                while (_dirn$72 && _end$73 >= i$71 || (!_dirn$72 && _end$73 <= i$71)) {
                     {
-                        int j$73 = i$69;
-                        int _end$75 = cols$68;
-                        int _step$76 = 1;
-                        boolean _dirn$74 = _step$76 >= 0;
-                        if (_step$76 != 0)
-                            while (_dirn$74 && _end$75 >= j$73 || (!_dirn$74 && _end$75 <= j$73)) {
+                        int j$75 = i$71;
+                        int _end$77 = cols$70;
+                        int _step$78 = 1;
+                        boolean _dirn$76 = _step$78 >= 0;
+                        if (_step$78 != 0)
+                            while (_dirn$76 && _end$77 >= j$75 || (!_dirn$76 && _end$77 <= j$75)) {
 
-                                j$73 = j$73 + _step$76;
+                                j$75 = j$75 + _step$78;
                             }
                     }
-                    i$69 = i$69 + _step$72;
+                    i$71 = i$71 + _step$74;
                 }
         }
     }
 
-    private void nest_itr$77(int x$78, int y$79) {
+    private void nest_itr$79(int x$80, int y$81) {
         {
-            Cell _cell$80 = getCellAbs(x$78, y$79);
+            Cell _cell$82 = getCellAbs(x$80, y$81);
             {
-                Cell top_btm$81;
-                top_btm$81 = _cell$80.N$7;
+                Cell top_btm$83;
+                top_btm$83 = _cell$82.N$7;
                 {
                     {
-                        Cell lft_rgt$82;
-                        lft_rgt$82 = _cell$80.E$10;
-                        lft_rgt$82._other$2.alive$11 = true;
-                        lft_rgt$82 = _cell$80.W$9;
-                        lft_rgt$82._other$2.alive$11 = true;
+                        Cell lft_rgt$84;
+                        lft_rgt$84 = _cell$82.E$10;
+                        lft_rgt$84._other$2.alive$11 = true;
+                        lft_rgt$84 = _cell$82.W$9;
+                        lft_rgt$84._other$2.alive$11 = true;
                     }
                 }
-                top_btm$81 = _cell$80.S$8;
+                top_btm$83 = _cell$82.S$8;
                 {
                     {
-                        Cell lft_rgt$82;
-                        lft_rgt$82 = _cell$80.E$10;
-                        lft_rgt$82._other$2.alive$11 = true;
-                        lft_rgt$82 = _cell$80.W$9;
-                        lft_rgt$82._other$2.alive$11 = true;
+                        Cell lft_rgt$84;
+                        lft_rgt$84 = _cell$82.E$10;
+                        lft_rgt$84._other$2.alive$11 = true;
+                        lft_rgt$84 = _cell$82.W$9;
+                        lft_rgt$84._other$2.alive$11 = true;
                     }
                 }
             }
         }
     }
 
-    private void set_nbrs_itr$83(int x$84, int y$85) {
+    private void set_nbrs_itr$85(int x$86, int y$87) {
         {
-            Cell _cell$86 = getCellAbs(x$84, y$85);
+            Cell _cell$88 = getCellAbs(x$86, y$87);
             {
-                Cell n_all$87;
-                n_all$87 = _cell$86.N$7;
+                Cell n_all$89;
+                n_all$89 = _cell$88.N$7;
 
-                n_all$87 = _cell$86.S$8;
+                n_all$89 = _cell$88.S$8;
 
-                n_all$87 = _cell$86.W$9;
+                n_all$89 = _cell$88.W$9;
 
-                n_all$87 = _cell$86.E$10;
+                n_all$89 = _cell$88.E$10;
 
-                n_all$87 = _cell$86;
+                n_all$89 = _cell$88;
 
             }
         }
         {
-            Cell _cell$88 = getCellAbs(x$84, y$85);
+            Cell _cell$90 = getCellAbs(x$86, y$87);
             {
-                Cell n_others$89;
-                n_others$89 = _cell$88.N$7;
+                Cell n_others$91;
+                n_others$91 = _cell$90.N$7;
 
-                n_others$89 = _cell$88.S$8;
+                n_others$91 = _cell$90.S$8;
 
-                n_others$89 = _cell$88.W$9;
+                n_others$91 = _cell$90.W$9;
 
-                n_others$89 = _cell$88.E$10;
+                n_others$91 = _cell$90.E$10;
 
             }
         }
         {
-            Cell _cell$90 = getCellAbs(x$84, y$85);
+            Cell _cell$92 = getCellAbs(x$86, y$87);
             {
-                Cell n_set$91;
-                n_set$91 = _cell$90.N$7;
+                Cell n_set$93;
+                n_set$93 = _cell$92.N$7;
 
-                n_set$91 = _cell$90.E$10;
+                n_set$93 = _cell$92.E$10;
 
             }
         }
